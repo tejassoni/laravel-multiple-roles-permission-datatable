@@ -4,7 +4,11 @@
             Sub Category
         </h2>
     </x-slot>
-
+    <!-- KEY : DATATABLE Starts Styles -->
+    @push('header-styles')
+        <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
+    @endpush
+    <!-- KEY : DATATABLE Starts Styles -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -51,7 +55,8 @@
                         </div>
                     @endif
                     <!-- Calls when session error triggers ends -->
-                    <table id="sub-category-tbl" class="w-full table-fixed" style="width:100%">
+                    <!-- KEY : DATATABLE Table ID and Class -->
+                    <table id="tbl" class="w-full table-fixed display cell-border row-border stripe">
                         <thead>
                             <tr class="bg-gray-100">
                                 <th class="px-4 py-2 border">Name</th>
@@ -99,4 +104,15 @@
             </div>
         </div>
     </div>
+    {{-- KEY : DATATABLE Starts --}}
+    @push('footer-scripts')
+        <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
+        <script type='text/javascript' src="{{ asset('js/datatables.min.js') }}"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#tbl').DataTable();
+            });
+        </script>
+    @endpush
+    {{-- KEY : DATATABLE Ends --}}
 </x-app-layout>

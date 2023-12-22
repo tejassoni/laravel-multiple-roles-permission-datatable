@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sub_categories', function (Blueprint $table) {
+        Schema::create('category_subcategory_pivot', function (Blueprint $table) {
             $table->id();
-            $table->string('name',100)->nullable();
-            $table->text('description')->nullable();
-            $table->integer('user_id')->unsigned()->nullable();
-            $table->tinyInteger('status')->comment('1 = Active, 0 = In-Active')->nullable()->default(1);
+            $table->integer('parent_category_id')->unsigned()->nullable();
+            $table->integer('sub_category_id')->unsigned()->nullable();            
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sub_categories');
+        Schema::dropIfExists('category_subcategory_pivot');
     }
 };

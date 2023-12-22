@@ -59,4 +59,5 @@ Server Requirements
 # Search Key
 <ol>
   <li>KEY : MULTIPERMISSION</li>
+  <li>KEY : DATATABLE</li>
 </ol>

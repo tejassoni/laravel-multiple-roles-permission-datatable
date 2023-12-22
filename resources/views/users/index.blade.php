@@ -4,7 +4,11 @@
             {{ __('Users') }}
         </h2>
     </x-slot>
-
+    <!-- KEY : DATATABLE Starts Styles -->
+    @push('header-styles')
+        <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
+    @endpush
+    <!-- KEY : DATATABLE Starts Styles -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 py-4">
@@ -49,30 +53,31 @@
                     </div>
                 @endif
                 <!-- Calls when session error triggers ends -->
-                <table class="w-full table-fixed">
+                <!-- KEY : DATATABLE Table ID and Class -->
+                <table id="tbl" class="w-full table-fixed display cell-border row-border stripe">
                     <thead>
-                        <tr class="bg-gray-100">
-                            <th class="px-4 py-2 border">Name</th>
-                            <th class="px-4 py-2 border">Email</th>
-                            <th class="px-4 py-2 border">Roles</th>
-                            <th class="px-4 py-2 border">Action</th>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Roles</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($users as $user)
                             <tr>
-                                <td class="px-4 py-2 border">{{ $user->name }}</td>
-                                <td class="px-4 py-2 border"><a href="mailto:{{ $user->email }}"
+                                <td>{{ $user->name }}</td>
+                                <td><a href="mailto:{{ $user->email }}"
                                         class="underline">{{ $user->email }}</a></td>
-                                <td class="px-4 py-2 border">
+                                <td>
                                     @foreach ($user->getRoleNames() as $v)
                                         <label class="badge badge-success">{{ $v }}</label> ,
                                     @endforeach
                                 </td>
-                                <td class="px-4 py-2 border">
+                                <td>
                                     @if (auth()->user()->id != $user->id)
                                         <form action="{{ route('users.destroy', $user->id) }}" method="POST">
-                                             <!-- KEY : MULTIPERMISSION starts -->
+                                            <!-- KEY : MULTIPERMISSION starts -->
                                             @can('user-show')
                                                 <a title="show" href="{{ route('users.show', $user->id) }}"
                                                     class="inline-flex items-center px-4 py-2 mx-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-500 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">
@@ -94,7 +99,7 @@
                                                     Delete
                                                 </button>
                                             @endcan
-                                             <!-- KEY : MULTIPERMISSION ends -->
+                                            <!-- KEY : MULTIPERMISSION ends -->
                                         </form>
                                     @endif
                                 </td>
@@ -105,4 +110,15 @@
             </div>
         </div>
     </div>
+    {{-- KEY : DATATABLE Starts --}}
+    @push('footer-scripts')
+        <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
+        <script type='text/javascript' src="{{ asset('js/datatables.min.js') }}"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#tbl').DataTable();
+            });
+        </script>
+    @endpush
+    {{-- KEY : DATATABLE Ends --}}
 </x-app-layout>
