@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category_subcategory_pivot', function (Blueprint $table) {
+        Schema::create('category_sub_category', function (Blueprint $table) {
             $table->id();
-            $table->integer('parent_category_id')->unsigned()->nullable();
-            $table->integer('sub_category_id')->unsigned()->nullable();            
-            $table->timestamps();
+            $table->integer('category_id')->unsigned()->nullable();
+            $table->integer('sub_category_id')->unsigned()->nullable();
         });
     }
 
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('category_subcategory_pivot');
+        Schema::dropIfExists('category_sub_category');
     }
 };

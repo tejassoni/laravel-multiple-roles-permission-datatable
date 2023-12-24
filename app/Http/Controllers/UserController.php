@@ -55,7 +55,7 @@ class UserController extends Controller
             $user = User::firstOrCreate(['name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password)]);
             $user->assignRole($roleIds); // new roles assigned to user  
             if ($user) { // inserted success
-                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all()]));
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all(),$user,$roleIds]));
                 return redirect()->route('users.index')
                     ->withSuccess('Created Successfully...!');
             }

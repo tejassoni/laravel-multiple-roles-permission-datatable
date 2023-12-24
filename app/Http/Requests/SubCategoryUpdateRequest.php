@@ -23,7 +23,8 @@ class SubCategoryUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:100|unique:sub_categories,name,'.request()->segment(2),
-            'select_parent_cat' => 'required'
+            'select_parent_cat' => 'required|array',
+            'select_parent_cat.*' => 'required',
         ];
     }
 }

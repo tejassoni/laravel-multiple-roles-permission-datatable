@@ -54,10 +54,11 @@ class SubCategoryController extends Controller
     public function store(SubCategoryStoreRequest $request)
     {
         try {
-            $created = SubCategory::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'parent_category_id' => $request->select_parent_cat, 'user_id' => auth()->user()->id]);
 
+            $created = SubCategory::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'user_id' => auth()->user()->id]);
+            $created->parentcategories()->attach($request->select_parent_cat);
             if ($created) { // inserted success
-                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all()]));
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all(),$created]));
                 return redirect()->route('subcategory.index')
                     ->withSuccess('Created successfully...!');
             }
@@ -83,7 +84,8 @@ class SubCategoryController extends Controller
      */
     public function show(SubCategory $subcategory)
     {
-        return view('subcategory.show', compact('subcategory'));
+        $parentCategoryNames = $subcategory->parentcategories()->pluck('categories.name')->toArray();
+        return view('subcategory.show', compact('subcategory','parentCategoryNames'));
     }
 
     /**
@@ -91,8 +93,9 @@ class SubCategoryController extends Controller
      */
     public function edit(SubCategory $subcategory)
     {
-        $parent_category = Category::where('status', Category::STATUS_ACTIVE)->where('user_id', auth()->user()->id)->get();
-        return view('subcategory.edit', compact('subcategory', 'parent_category'));
+        $parent_category = Category::where('status', Category::STATUS_ACTIVE)->get();
+        $selectedParentCatIds = $subcategory->parentcategories()->pluck('categories.id')->toArray();
+        return view('subcategory.edit', compact('subcategory', 'parent_category','selectedParentCatIds'));
     }
 
     /**
@@ -101,7 +104,8 @@ class SubCategoryController extends Controller
     public function update(SubCategoryUpdateRequest $request, SubCategory $subcategory)
     {
         try {
-            $subcategory->updateOrFail(['name' => $request->name, 'description' => $request->description, 'parent_category_id' => $request->select_parent_cat, 'user_id' => auth()->user()->id]);
+            $subcategory->updateOrFail(['name' => $request->name, 'description' => $request->description, 'user_id' => auth()->user()->id]);
+            $subcategory->parentcategories()->sync($request->select_parent_cat);
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success updating data : " . json_encode([request()->all(), $subcategory]));
             return redirect()->route('subcategory.index')
                 ->withSuccess('Updated Successfully...!');
@@ -128,6 +132,7 @@ class SubCategoryController extends Controller
     public function destroy(SubCategory $subcategory)
     {
         try {
+            $subcategory->parentcategories()->detach();
             $subcategory->delete();
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success deleting data : " . json_encode([request()->all(), $subcategory]));
             return redirect()->route('subcategory.index')

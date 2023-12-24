@@ -49,7 +49,7 @@ class ParentCategoryController extends Controller
             $created = Category::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'user_id' => auth()->user()->id]);
 
             if ($created) { // inserted success
-                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all()]));
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all(),$created]));
                 return redirect()->route('category.index')
                     ->withSuccess('created successfully...!');
             }

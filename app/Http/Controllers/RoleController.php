@@ -57,7 +57,7 @@ class RoleController extends Controller
             $role = Role::firstOrCreate(['name' => $request->input('name')]);
             $role->syncPermissions($request->input('permission'));
             if ($role) {
-                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all()]));
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all(),$role]));
                 return redirect()->route('roles.index')
                     ->with('success', 'Role created successfully');
             }

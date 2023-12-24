@@ -61,7 +61,7 @@ class ProductController extends Controller
             $created = Product::create(['name' => $request->name, 'description' => $request->description, 'image' => $fileName, 'parent_category_id' => $request->select_parent_cat, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
 
             if ($created) { // inserted success
-                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success insert data : " . json_encode([request()->all()]));
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success insert data : " . json_encode([request()->all(),$created]));
                 return redirect()->route('products.index')
                     ->withSuccess('Created successfully...!');
             }

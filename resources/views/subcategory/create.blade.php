@@ -60,11 +60,11 @@
                         <label for="select_parent_cat"
                             class="block mb-2 text-sm font-bold text-gray-700">{{ __('Parent category') }} <span
                                 class="text-red-600">*</span></label>
-                        <select class="form-select" name="select_parent_cat" id="select_parent_cat" required>
-                            <option selected readonly disabled>{{ __('Select Parent category') . '--' }}</option>
+                        <select class="form-select" name="select_parent_cat[]" id="select_parent_cat" required multiple>
+                            <option readonly disabled>{{ __('Select Parent category') . '--' }}</option>
                             @foreach ($parent_category as $parent_cat)
                                 <option value="{{ $parent_cat->id }}"
-                                    {{ old('select_parent_cat') == $parent_cat->id ? 'selected' : '' }}>
+                                    @if (old('select_parent_cat') && in_array($parent_cat->id, old('select_parent_cat'))) selected @endif >
                                     {{ $parent_cat->name }}</option>
                             @endforeach
                         </select>
