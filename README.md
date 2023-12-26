@@ -60,4 +60,5 @@ Server Requirements
 <ol>
   <li>KEY : MULTIPERMISSION</li>
   <li>KEY : DATATABLE</li>
+  <li>KEY : DYNAMICMULTIROW</li>
 </ol>

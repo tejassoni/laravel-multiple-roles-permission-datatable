@@ -40,7 +40,7 @@ class Product extends Model
      */
     public function getParentCatHasOne()
     {
-        return $this->hasOne(Category::class, 'id', 'parent_category_id');
+        return $this->hasOne(Category::class, 'id', 'category_id');
     }
 
     /**
@@ -53,7 +53,7 @@ class Product extends Model
 
     public function getParentCategoryHasOne()
     {
-    return $this->hasOne(Category::class, 'id', 'parent_category_id');
+    return $this->hasOne(Category::class, 'id', 'category_id');
     }
 
     

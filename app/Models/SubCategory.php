@@ -37,18 +37,27 @@ class SubCategory extends Model
     /**
      * Sub category to Parent category relationship with hasOne
      */
-    public function getParentCatHasOne()
+    public function getParentCatHasMany()
     {
-        return $this->hasOne(Category::class, 'id', 'parent_category_id');
-    }
+        return $this->hasMany(Category::class, 'id', 'category_id');
+    } 
 
-    /**
+
+     /**
      * Sub category to User relationship with hasOne
      */
     public function getCatUserHasOne()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
-    }    
+    } 
+    
+     /**
+     * Sub category to Parent category relationship with hasOne
+     */
+    public function getParentCatHasOne()
+    {
+        return $this->hasOne(Category::class, 'id', 'category_id');
+    }
 
     public function parentcategories(){
         return $this->belongsToMany(Category::class);

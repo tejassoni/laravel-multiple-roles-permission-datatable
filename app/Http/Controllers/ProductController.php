@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
@@ -61,7 +62,7 @@ class ProductController extends Controller
             $created = Product::create(['name' => $request->name, 'description' => $request->description, 'image' => $fileName, 'parent_category_id' => $request->select_parent_cat, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
 
             if ($created) { // inserted success
-                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success insert data : " . json_encode([request()->all(),$created]));
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success insert data : " . json_encode([request()->all(), $created]));
                 return redirect()->route('products.index')
                     ->withSuccess('Created successfully...!');
             }
@@ -142,7 +143,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        try {            
+        try {
             $product->delete();
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success deleting data : " . json_encode([request()->all(), $product]));
             return redirect()->route('products.index')
@@ -200,5 +201,47 @@ class ProductController extends Controller
             $resp['ex_line'] = $ex->getLine();
         }
         return $resp;
+    }
+
+    /**
+     * Get Sub Categories details by Parent CategoryId
+     */
+    public function getSubCategoryByParentCatId()
+    {
+        try {
+            if(!request()->ajax()){
+                throw new \Exception("Requested Method not valid...!",\Illuminate\Http\Response::HTTP_BAD_REQUEST);    
+            }            
+            $parentCatId = request()->category_id;
+            $categoryListByParentCatId = SubCategory::select('id','name')->whereHas('parentcategories', function ($query) use ($parentCatId) {
+                $query->where('category_id', $parentCatId);
+            })
+                ->where('status', SubCategory::STATUS_ACTIVE)
+                ->get();
+
+            if ($categoryListByParentCatId->isNotEmpty()) {
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success get sub category data : " . json_encode([request()->all(), $categoryListByParentCatId]));
+                return response()->json([
+                    'status' => true,
+                    'data' => $categoryListByParentCatId,
+                    'message' => 'Result get Successfully..!'
+                ]);
+            }
+            throw new \Exception("Parent Category Details not found...!", \Illuminate\Http\Response::HTTP_NOT_FOUND);
+        } catch (\Illuminate\Database\QueryException $e) { // Handle query exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error Query deleting data : " . $e->getMessage() . '');
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => 'Error Query..! ' . $e->getMessage()
+            ],(!empty($e->getCode())) ? $e->getCode() : 401);
+        } catch (\Exception $e) { // Handle any runtime exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error deleting data : " . $e->getMessage() . '');
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => 'Error Triggers..! ' . $e->getMessage()
+            ],(!empty($e->getCode())) ? $e->getCode() : 401);
+        }
     }
 }

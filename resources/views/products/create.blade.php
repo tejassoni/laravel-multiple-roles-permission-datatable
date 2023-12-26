@@ -67,24 +67,64 @@
                             </span>
                         @enderror
                     </div>
-
-                    <div class="mb-4">
-                        <label for="parentcategory_name"
-                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Parent category') }} <span
-                                class="text-red-600">*</span></label>
-                        <select class="form-select" name="select_parent_cat" id="select_parent_cat" required>
-                            <option selected readonly disabled>{{ __('Select Parent category') . '--' }}</option>
-                            @foreach ($parent_category as $parent_cat)
-                                <option value="{{ $parent_cat->id }}"
-                                    {{ old('select_parent_cat') == $parent_cat->id ? 'selected' : '' }}>
-                                    {{ $parent_cat->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('select_parent_cat')
-                            <span class="text-red-600 text-danger">{{ $message }}
-                            </span>
-                        @enderror
-                    </div>
+                    <!-- KEY :: DYNAMICMULTIROW Starts -->
+                    <table id="dynamicAddRemoveTbl"
+                        class="w-full table-fixed display cell-border row-border stripe mb-4 mt-4">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2 border" colspan="3">
+                                    <label for="add-row" class="block mb-2 text-sm font-bold text-gray-700"><a
+                                            id="add-row"
+                                            class="inline-flex items-center px-4 py-2 mx-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-500 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25 btn btn-sm btn-info">Add
+                                            New</a></label>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="px-4 py-2 border">Category</th>
+                                <th class="px-4 py-2 border">Sub Category</th>
+                                <th class="px-4 py-2 border">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- This Row is Use for Clone Rows and Ignored to display on initialize page -->
+                            <tr id="row-template" class="bg-gray-100" style="display:none;">
+                                <td class="px-4 py-2 border">
+                                    <div class="mb-4">
+                                        <label for="parentcategory_name"
+                                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Parent category') }}
+                                            <span class="text-red-600">*</span></label>
+                                        <select class="form-select select_parent_cat" name="select_parent_cat[]"
+                                            class="select_parent_cat">
+                                            <option selected readonly disabled>
+                                                {{ __('Select Parent category') . '--' }}</option>
+                                            @foreach ($parent_category as $parent_cat)
+                                                <option value="{{ $parent_cat->id }}"
+                                                    {{ old('select_parent_cat') == $parent_cat->id ? 'selected' : '' }}>
+                                                    {{ $parent_cat->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <div class="mb-4">
+                                        <label for="subcategory_name"
+                                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Sub category') }}
+                                            <span class="text-red-600">*</span></label>
+                                        <select class="form-select select_sub_cat" name="select_sub_cat[]"
+                                            class="select_sub_cat">
+                                            <option selected readonly disabled>{{ __('Select Sub category') . '--' }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2 border"><button
+                                        class="remove-row inline-flex items-center px-4 py-2 mx-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-red-600 border border-transparent rounded-md hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:shadow-outline-gray disabled:opacity-25">Remove</button>
+                                </td>
+                            </tr>
+                            <!-- This Row is Use for Clone Rows and Ignored to display on initialize page -->
+                        </tbody>
+                    </table>
+                    <!-- KEY :: DYNAMICMULTIROW Ends -->
 
                     <div class="mb-4">
                         <label for="price" class="block mb-2 text-sm font-bold text-gray-700">Price <span
@@ -122,4 +162,132 @@
             </div>
         </div>
     </div>
+    {{-- KEY : DYNAMICMULTIROW Starts --}}
+    @push('footer-scripts')
+        <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // Add Row Btn 
+                $(document).on('click', '#add-row', function() {
+                    var row = $('#row-template').clone();
+                    row.removeAttr('id').show();
+                    $('#dynamicAddRemoveTbl tbody').append(row);
+                });
+                // Remove Row Btn 
+                $(document).on('click', '.remove-row', function() {
+                    if ($('#dynamicAddRemoveTbl tbody tr').length > 2) { // Check if more than one row exists
+                        $(this).closest('tr').remove(); // Remove only if multiple rows are present
+                    } else { // Provide feedback to the user, such as displaying a message:
+                        alert("Cannot remove the last row.");
+                    }
+                });
+
+                // parent category on change bind sub category data by ajax
+                $(document).on('change', '.select_parent_cat', function() {
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ url('/getsubcategories') }}',
+                        data: {
+                            category_id: $(this).val()
+                        },
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            '_method': 'post'
+                        },
+                        beforeSend: function() { // Before ajax send operation 
+                                // console.log('Before ajax send'); 
+                                $(this).closest('tr').addClass('demo');
+                                // $(this).closest('tr').empty();
+                            },
+                        success: function(data_resp, textStatus, jqXHR) { // On ajax success operation
+                            console.log('Success ajax calls status :: ' + textStatus +
+                                ' jqXHR :: ' + jqXHR);
+                            console.log(data_resp);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) { // On ajax error operation 
+                            // console.log(textStatus, errorThrown);        
+                        }
+                    });
+                });
+
+                // country change wise state
+               /* $('#select_country').on('change', function() {
+                    if ($(this).val() != '')
+                        getStateByCountryId($(this).val());
+                });
+                // state change wise city
+                $('#select_state').on('change', function() {
+                    if ($(this).val() != '')
+                        getCityByStateId($(this).val());
+                });
+                // ajax get states list by country id
+                function getStateByCountryId(country_id) {
+                    if (country_id != '') {
+                        $.ajax({
+                            type: 'get', // Default GET
+                            url: 'getstatebycountry/' + country_id,
+                            dataType: 'json', // text , XML, HTML
+                            beforeSend: function() { // Before ajax send operation 
+                                // console.log('Before ajax send'); 
+                                $('#select_state').html('');
+                                $('#select_state').empty();
+                                $('#select_city').html('');
+                                $('#select_city').empty();
+                            },
+                            success: function(data_resp, textStatus, jqXHR) { // On ajax success operation
+                                if (data_resp.status) {
+                                    $('#select_state').empty().append(data_resp.data);
+                                    $('#select_city').empty().append('<option value='
+                                        ' disabled readonly selected>Select City</option>');
+                                } else {
+                                    $('#select_state').empty().append(data_resp.data);
+                                    $('#select_city').empty().append('<option value='
+                                        ' disabled readonly selected>Select City</option>');
+                                }
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) { // On ajax error operation
+                                // console.log(textStatus, errorThrown);
+                            },
+                            complete: function() { // On ajax complete operation
+                                // console.log('Complete ajax send');
+                            }
+                        });
+                    }
+                }
+                // ajax get city list by state id
+                function getCityByStateId(state_id) {
+                    if (state_id != '') {
+                        $.ajax({
+                            type: 'get', // Default GET
+                            url: 'getcitybystate/' + state_id,
+                            dataType: 'json', // text , XML, HTML
+                            beforeSend: function() { // Before ajax send operation 
+                                // console.log('Before ajax send'); 
+                                $('#select_city').html('');
+                                $('#select_city').empty();
+                            },
+                            success: function(data_resp, textStatus, jqXHR) { // On ajax success operation
+                                // console.log('Success ajax calls status :: '+textStatus+' jqXHR :: '+jqXHR);
+                                if (data_resp.status) {
+                                    $('#select_city').empty().append(data_resp.data);
+                                } else {
+                                    $('#select_city').html('');
+                                    $('#select_city').empty();
+                                    $('#select_city').empty().append(data_resp.data);
+                                }
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) { // On ajax error operation
+                                // console.log(textStatus, errorThrown);
+                            },
+                            complete: function() { // On ajax complete operation
+                                // console.log('Complete ajax send');
+                            }
+                        });
+                    }
+                } */
+            });
+        </script>
+    @endpush
+    {{-- KEY : DYNAMICMULTIROW Ends --}}
 </x-app-layout>

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_category_pivot', function (Blueprint $table) {
+        Schema::create('product_category', function (Blueprint $table) {
             $table->id();
             $table->integer('product_id')->unsigned()->nullable();
             $table->integer('parent_category_id')->unsigned()->nullable();
