@@ -54,12 +54,15 @@ class ProductController extends Controller
     public function store(ProductStoreRequest $request)
     {
         try {
+          
             $fileName = null;
-            if ($request->hasFile('image')) {
-                $filehandle = $this->_singleFileUploads($request, 'image', 'public/products');
-                $fileName = $filehandle['data']['name'];
-            }
-            $created = Product::create(['name' => $request->name, 'description' => $request->description, 'image' => $fileName, 'parent_category_id' => $request->select_parent_cat, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
+            // if ($request->hasFile('image')) {
+            //     $filehandle = $this->_singleFileUploads($request, 'image', 'public/products');
+            //     $fileName = $filehandle['data']['name'];
+            // }
+            $created = Product::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
+
+            $created->category()->sync([['category_id'=>1,'sub_category_id'=>2]]);
 
             if ($created) { // inserted success
                 \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success insert data : " . json_encode([request()->all(), $created]));

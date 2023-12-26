@@ -56,5 +56,9 @@ class Product extends Model
     return $this->hasOne(Category::class, 'id', 'category_id');
     }
 
+    public function category(){
+        return $this->belongsToMany(Category::class);
+    }
+
     
 }

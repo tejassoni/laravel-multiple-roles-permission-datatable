@@ -184,6 +184,8 @@
 
                 // parent category on change bind sub category data by ajax
                 $(document).on('change', '.select_parent_cat', function() {
+                    var closestTr = $(this).closest('tr');
+                    var selectOptions = '<option selected="" readonly="" disabled="">Select Sub category-- </option>';
                     $.ajax({
                         type: 'POST',
                         url: '{{ url('/getsubcategories') }}',
@@ -195,97 +197,24 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                             '_method': 'post'
                         },
-                        beforeSend: function() { // Before ajax send operation 
-                                // console.log('Before ajax send'); 
-                                $(this).closest('tr').addClass('demo');
-                                // $(this).closest('tr').empty();
-                            },
-                        success: function(data_resp, textStatus, jqXHR) { // On ajax success operation
-                            console.log('Success ajax calls status :: ' + textStatus +
-                                ' jqXHR :: ' + jqXHR);
-                            console.log(data_resp);
+                        beforeSend: function() { // Before ajax send operation
+                            closestTr.find('.select_sub_cat').html(selectOptions);
+                        },
+                        success: function(data_resp, textStatus,
+                        jqXHR) { // On ajax success operation
+                            data_resp.data.forEach(function(valueObj, index) {
+                                selectOptions += '<option value="' + valueObj.id + '" >' +
+                                    valueObj.name + '</option>'
+                            });
+                            // bind final options to select
+                            closestTr.find('.select_sub_cat').html(selectOptions);
                         },
                         error: function(jqXHR, textStatus, errorThrown) { // On ajax error operation 
-                            // console.log(textStatus, errorThrown);        
+                            closestTr.find('.select_sub_cat').html(selectOptions);
                         }
                     });
                 });
-
-                // country change wise state
-               /* $('#select_country').on('change', function() {
-                    if ($(this).val() != '')
-                        getStateByCountryId($(this).val());
-                });
-                // state change wise city
-                $('#select_state').on('change', function() {
-                    if ($(this).val() != '')
-                        getCityByStateId($(this).val());
-                });
-                // ajax get states list by country id
-                function getStateByCountryId(country_id) {
-                    if (country_id != '') {
-                        $.ajax({
-                            type: 'get', // Default GET
-                            url: 'getstatebycountry/' + country_id,
-                            dataType: 'json', // text , XML, HTML
-                            beforeSend: function() { // Before ajax send operation 
-                                // console.log('Before ajax send'); 
-                                $('#select_state').html('');
-                                $('#select_state').empty();
-                                $('#select_city').html('');
-                                $('#select_city').empty();
-                            },
-                            success: function(data_resp, textStatus, jqXHR) { // On ajax success operation
-                                if (data_resp.status) {
-                                    $('#select_state').empty().append(data_resp.data);
-                                    $('#select_city').empty().append('<option value='
-                                        ' disabled readonly selected>Select City</option>');
-                                } else {
-                                    $('#select_state').empty().append(data_resp.data);
-                                    $('#select_city').empty().append('<option value='
-                                        ' disabled readonly selected>Select City</option>');
-                                }
-                            },
-                            error: function(jqXHR, textStatus, errorThrown) { // On ajax error operation
-                                // console.log(textStatus, errorThrown);
-                            },
-                            complete: function() { // On ajax complete operation
-                                // console.log('Complete ajax send');
-                            }
-                        });
-                    }
-                }
-                // ajax get city list by state id
-                function getCityByStateId(state_id) {
-                    if (state_id != '') {
-                        $.ajax({
-                            type: 'get', // Default GET
-                            url: 'getcitybystate/' + state_id,
-                            dataType: 'json', // text , XML, HTML
-                            beforeSend: function() { // Before ajax send operation 
-                                // console.log('Before ajax send'); 
-                                $('#select_city').html('');
-                                $('#select_city').empty();
-                            },
-                            success: function(data_resp, textStatus, jqXHR) { // On ajax success operation
-                                // console.log('Success ajax calls status :: '+textStatus+' jqXHR :: '+jqXHR);
-                                if (data_resp.status) {
-                                    $('#select_city').empty().append(data_resp.data);
-                                } else {
-                                    $('#select_city').html('');
-                                    $('#select_city').empty();
-                                    $('#select_city').empty().append(data_resp.data);
-                                }
-                            },
-                            error: function(jqXHR, textStatus, errorThrown) { // On ajax error operation
-                                // console.log(textStatus, errorThrown);
-                            },
-                            complete: function() { // On ajax complete operation
-                                // console.log('Complete ajax send');
-                            }
-                        });
-                    }
-                } */
+              
             });
         </script>
     @endpush
