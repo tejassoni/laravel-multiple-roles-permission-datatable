@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('product_id')->unsigned()->nullable();
             $table->integer('category_id')->unsigned()->nullable();
-            $table->integer('sub_category_id')->unsigned()->nullable();
-            $table->timestamps();
+            $table->integer('sub_category_id')->unsigned()->nullable();            
         });
     }
 

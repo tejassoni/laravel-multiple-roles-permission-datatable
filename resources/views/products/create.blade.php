@@ -61,7 +61,7 @@
                                 class="text-red-600">*</span></label>
                         <input type="file"
                             class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                            name="image" accept=".jpg, .png, .jpeg, .gif" required>
+                            name="images[]" accept=".jpg, .png, .jpeg, .gif" multiple required>
                         @error('image')
                             <span class="text-red-600">{{ $message }}
                             </span>
@@ -185,36 +185,41 @@
                 // parent category on change bind sub category data by ajax
                 $(document).on('change', '.select_parent_cat', function() {
                     var closestTr = $(this).closest('tr');
-                    var selectOptions = '<option selected="" readonly="" disabled="">Select Sub category-- </option>';
-                    $.ajax({
-                        type: 'POST',
-                        url: '{{ url('/getsubcategories') }}',
-                        data: {
-                            category_id: $(this).val()
-                        },
-                        dataType: 'json',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                            '_method': 'post'
-                        },
-                        beforeSend: function() { // Before ajax send operation
-                            closestTr.find('.select_sub_cat').html(selectOptions);
-                        },
-                        success: function(data_resp, textStatus,
-                        jqXHR) { // On ajax success operation
-                            data_resp.data.forEach(function(valueObj, index) {
-                                selectOptions += '<option value="' + valueObj.id + '" >' +
-                                    valueObj.name + '</option>'
-                            });
-                            // bind final options to select
-                            closestTr.find('.select_sub_cat').html(selectOptions);
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) { // On ajax error operation 
-                            closestTr.find('.select_sub_cat').html(selectOptions);
-                        }
-                    });
+                    var selectOptions =
+                        '<option selected="" readonly="" disabled="">Select Sub category-- </option>';
+                    if ($(this).val() != '') { // check value is not empty then send ajax request
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ url('/getsubcategories') }}',
+                            data: {
+                                category_id: $(this).val()
+                            },
+                            dataType: 'json',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                                '_method': 'post'
+                            },
+                            beforeSend: function() { // Before ajax send operation
+                                closestTr.find('.select_sub_cat').html(selectOptions);
+                            },
+                            success: function(data_resp, textStatus,
+                                jqXHR) { // On ajax success operation
+                                data_resp.data.forEach(function(valueObj, index) {
+                                    selectOptions += '<option value="' + valueObj.id +
+                                        '" >' +
+                                        valueObj.name + '</option>'
+                                });
+                                // bind final options to select
+                                closestTr.find('.select_sub_cat').html(selectOptions);
+                            },
+                            error: function(jqXHR, textStatus,
+                                errorThrown) { // On ajax error operation 
+                                closestTr.find('.select_sub_cat').html(selectOptions);
+                            }
+                        });
+                    }
                 });
-              
+
             });
         </script>
     @endpush
