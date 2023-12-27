@@ -54,18 +54,24 @@ class ProductController extends Controller
     public function store(ProductStoreRequest $request)
     {
         try {
-            $fileName = null;
-            if ($request->hasFile('images')) {
-                dd($request->file('images'),$_FILES);
-                $filehandle = $this->_singleFileUploads($request, 'image', 'public/products');
-                $fileName = $filehandle['data']['name'];
+
+            $created = Product::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
+            $productImgsDetailsArr = [];
+            if ($request->hasFile('images')) {                
+                $filehandle = $this->_multipleFileUploads($request, 'images', 'public/products');
+                if($filehandle['status']){                    
+                    foreach($filehandle['data'] as $keyFile => $valFile) { 
+                        $productImgsDetailsArr[] = ['filename' => $valFile['name'],'filemeta' => json_encode($valFile),'product_id' => $created->id];          
+                    } 
+                }                
             }
+            $created->images()->sync($productImgsDetailsArr);
+            dd('done');
+            // prepare cateogy_product table relational data logic
             $productCategoriesArr = [];
             foreach($request->select_parent_cat as $keyCat => $valCat ) {   
-                $productCategoriesArr[] = ['category_id' => $valCat,'sub_category_id'=>$request->select_sub_cat[$keyCat]];
-            
-            } // Loops Ends
-            $created = Product::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
+                $productCategoriesArr[] = ['category_id' => $valCat,'sub_category_id'=>$request->select_sub_cat[$keyCat]];            
+            }     
             // insert cateogy_product table relational data
             $created->category()->sync($productCategoriesArr);
 
@@ -173,36 +179,41 @@ class ProductController extends Controller
     }
 
     /**
-     * _singleFileUploads : Complete Fileupload Handling
+     * _multipleFileUploads : Complete Fileupload Handling
      * @param  Request $request
-     * @param  $htmlformfilename : input type file name
-     * @param  $uploadfiletopath : Public folder paths 'foldername/subfoldername' Example public/user
+     * @param  $htmlFormFilename : input type file name
+     * @param  $uploadFileToPath : Public folder paths 'foldername/subfoldername' Example public/user
      * @return File save with array return
      */
-    private function _singleFileUploads($request = "", $htmlformfilename = "", $uploadfiletopath = "")
+    private function _multipleFileUploads($request = "", $htmlFormFilename = "", $uploadFileToPath = "")
     {
         try {
             // check parameter empty Validation
-            if (empty($request) || empty($htmlformfilename) || empty($uploadfiletopath)) {
+            if (empty($request) || empty($htmlFormFilename) || empty($uploadFileToPath)) {
                 throw new \Exception("Required Parameters are missing", 400);
             }
             // check if folder exist at public directory if not exist then create folder 0777 permission
-            if (!file_exists($uploadfiletopath)) {
-                $oldmask = umask(0);
-                mkdir($uploadfiletopath, 0777, true);
-                umask($oldmask);
+            if (!file_exists($uploadFileToPath)) {
+                $oldMask = umask(0);
+                mkdir($uploadFileToPath, 0777, true);
+                umask($oldMask);
             }
-            $fileNameOnly = preg_replace("/[^a-z0-9\_\-]/i", '', basename($request->file($htmlformfilename)->getClientOriginalName(), '.' . $request->file($htmlformfilename)->getClientOriginalExtension()));
-            $fileFullName = $fileNameOnly . "_" . date('dmY') . "_" . time() . "." . $request->file($htmlformfilename)->getClientOriginalExtension();
-            $path = $request->file($htmlformfilename)->storeAs($uploadfiletopath, $fileFullName);
-            // $request->file($htmlformfilename)->move(public_path($uploadfiletopath), $fileFullName);
+             
+            $multiFileArr = [];
+            foreach($request->$htmlFormFilename as $imgKey => $imgVal ) { 
+                $fileNameOnly = preg_replace("/[^a-z0-9\_\-]/i", '', basename($imgVal->getClientOriginalName(), '.' . $imgVal->getClientOriginalExtension()));
+                $fileFullName = $fileNameOnly . "_" . date('dmY') . "_" . time() . "." . $imgVal->getClientOriginalExtension();
+                $path = $imgVal->storeAs($uploadFileToPath, $fileFullName);
+                // $imgVal->move(public_path($uploadFileToPath), $fileFullName);
+                $multiFileArr[] = array('name' => $fileFullName, 'url' => url('storage/' . str_replace('public/', '', $uploadFileToPath) . '/' . $fileFullName), 'path' => \storage_path('app/' . $path), 'extenstion' => $imgVal->getClientOriginalExtension(), 'type' => $imgVal->getMimeType(), 'size' => $imgVal->getSize());
+            }            
             $resp['status'] = true;
-            $resp['data'] = array('name' => $fileFullName, 'url' => url('storage/' . str_replace('public/', '', $uploadfiletopath) . '/' . $fileFullName), 'path' => \storage_path('app/' . $path), 'extenstion' => $request->file($htmlformfilename)->getClientOriginalExtension(), 'type' => $request->file($htmlformfilename)->getMimeType(), 'size' => $request->file($htmlformfilename)->getSize());
-            $resp['message'] = "File uploaded successfully..!";
+            $resp['data'] = $multiFileArr;
+            $resp['message'] = "Files are uploaded successfully..!";
         } catch (\Exception $ex) {
             $resp['status'] = false;
             $resp['data'] = ['name' => null];
-            $resp['message'] = 'File not uploaded...!';
+            $resp['message'] = 'Files are not uploaded...!';
             $resp['ex_message'] = $ex->getMessage();
             $resp['ex_code'] = $ex->getCode();
             $resp['ex_file'] = $ex->getFile();

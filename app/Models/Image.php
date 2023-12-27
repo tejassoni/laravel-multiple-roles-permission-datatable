@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ImageProduct extends Model
+class Image extends Model
 {
     use HasFactory;
 
@@ -31,7 +31,7 @@ class ImageProduct extends Model
     protected $guarded = ['created_at','updated_at'];
 
     public function products() {
-        return $this->belongsToMany(Product::class, 'id', 'product_id');
+        return $this->belongsToMany(Product::class);
     }
     
 }
