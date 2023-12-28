@@ -71,7 +71,13 @@
                                 <tr>
                                     <td class="px-4 py-2 border">{{ $subCat->name }}</td>
                                     <td class="px-4 py-2 border">{{ $subCat->description }}</td>
-                                    <td class="px-4 py-2 border">{{ $subCat->getParentCatHasOne->name ?? 'None' }}</td>
+                                    <td class="px-4 py-2 border">@php if($subCat->parentcategories){
+                                        foreach($subCat->parentcategories as $keyParCat => $valParCat ) { 
+                                            echo $valParCat->name." , ";
+                                        } // Loops Ends
+                                    } 
+                                    @endphp
+                                    </td>
                                     <td class="px-4 py-2 border">{{ $subCat->getCatUserHasOne->name ?? 'None' }}</td>
                                     <td class="px-4 py-2 border">
                                         <form action="{{ route('subcategory.destroy', $subCat->id) }}" method="POST">

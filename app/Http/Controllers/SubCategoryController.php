@@ -30,11 +30,12 @@ class SubCategoryController extends Controller
      */
     public function index()
     {
-        $subcategories = SubCategory::with(['getCatUserHasOne', 'getParentCatHasOne'])
+        $subcategories = SubCategory::with(['getCatUserHasOne', 'parentcategories:name'])
             ->where('user_id', auth()->user()->id)
             ->orderBy('updated_at', 'desc')
             ->where('status', SubCategory::STATUS_ACTIVE)
             ->get();
+            // dd('Test 1 :: Starts', $subcategories);
         return view('subcategory.index', compact('subcategories'));
     }
 
@@ -54,7 +55,6 @@ class SubCategoryController extends Controller
     public function store(SubCategoryStoreRequest $request)
     {
         try {
-
             $created = SubCategory::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'user_id' => auth()->user()->id]);
             $created->parentcategories()->attach($request->select_parent_cat);
             if ($created) { // inserted success

@@ -56,7 +56,7 @@ class SubCategory extends Model
      */
     public function getParentCatHasOne()
     {
-        return $this->hasOne(Category::class, 'id', 'category_id');
+        return $this->hasMany(Category::class, 'id', 'category_id');
     }
 
     public function parentcategories(){
