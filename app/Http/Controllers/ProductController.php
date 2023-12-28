@@ -55,28 +55,29 @@ class ProductController extends Controller
     public function store(ProductStoreRequest $request)
     {
         try {
-
+            // inserted main product details data at product table
             $created = Product::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
-            $productImgsDetailsArr = [];
-            if ($request->hasFile('images')) {                
+            // multiple images upload
+            if ($request->hasFile('images')) { // Images founds               
                 $filehandle = $this->_multipleFileUploads($request, 'images', 'public/products');
-                if($filehandle['status']){                    
-                    foreach($filehandle['data'] as $keyFile => $valFile) { 
-                        $productImgsDetailsArr[] = ['filename' => $valFile['name'],'filemeta' => json_encode($valFile),'product_id' => $created->id,'created_at' => now(),'updated_at' => now()];          
-                    }                    
+                if ($filehandle['status']) { // files are uploaded successfully
+                    $productImgsDetailsArr = [];
+                    foreach ($filehandle['data'] as $keyFile => $valFile) {
+                        $productImgsDetailsArr[] = ['filename' => $valFile['name'], 'filemeta' => json_encode($valFile), 'product_id' => $created->id, 'created_at' => now(), 'updated_at' => now()];
+                    }
                     // Insert Bulk Product Images data
                     ProductImagePivot::insertOrIgnore($productImgsDetailsArr);
-                }                
+                }
             }
-            
             // prepare cateogy_product table relational data logic
             $productCategoriesArr = [];
-            foreach($request->select_parent_cat as $keyCat => $valCat ) {   
-                $productCategoriesArr[] = ['category_id' => $valCat,'sub_category_id'=>$request->select_sub_cat[$keyCat]];            
-            }     
+            foreach ($request->select_parent_cat as $keyCat => $valCat) {
+                $productCategoriesArr[] = ['category_id' => $valCat, 'sub_category_id' => $request->select_sub_cat[$keyCat]];
+            }
             // insert cateogy_product table relational data
-            $created->category()->sync($productCategoriesArr);
-
+            if (sizeof($productCategoriesArr) > 0) {
+                $created->category()->sync($productCategoriesArr);
+            }
             if ($created) { // inserted success
                 \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success insert data : " . json_encode([request()->all(), $created]));
                 return redirect()->route('products.index')
@@ -200,15 +201,15 @@ class ProductController extends Controller
                 mkdir($uploadFileToPath, 0777, true);
                 umask($oldMask);
             }
-             
+
             $multiFileArr = [];
-            foreach($request->$htmlFormFilename as $imgKey => $imgVal ) { 
+            foreach ($request->$htmlFormFilename as $imgKey => $imgVal) {
                 $fileNameOnly = preg_replace("/[^a-z0-9\_\-]/i", '', basename($imgVal->getClientOriginalName(), '.' . $imgVal->getClientOriginalExtension()));
                 $fileFullName = $fileNameOnly . "_" . date('dmY') . "_" . time() . "." . $imgVal->getClientOriginalExtension();
                 $path = $imgVal->storeAs($uploadFileToPath, $fileFullName);
                 // $imgVal->move(public_path($uploadFileToPath), $fileFullName);
                 $multiFileArr[] = array('name' => $fileFullName, 'url' => url('storage/' . str_replace('public/', '', $uploadFileToPath) . '/' . $fileFullName), 'path' => \storage_path('app/' . $path), 'extenstion' => $imgVal->getClientOriginalExtension(), 'type' => $imgVal->getMimeType(), 'size' => $imgVal->getSize());
-            }            
+            }
             $resp['status'] = true;
             $resp['data'] = $multiFileArr;
             $resp['message'] = "Files are uploaded successfully..!";
@@ -230,11 +231,11 @@ class ProductController extends Controller
     public function getSubCategoryByParentCatId()
     {
         try {
-            if(!request()->ajax()){
-                throw new \Exception("Requested Method not valid...!",\Illuminate\Http\Response::HTTP_BAD_REQUEST);    
-            }            
+            if (!request()->ajax()) {
+                throw new \Exception("Requested Method not valid...!", \Illuminate\Http\Response::HTTP_BAD_REQUEST);
+            }
             $parentCatId = request()->category_id;
-            $categoryListByParentCatId = SubCategory::select('id','name')->whereHas('parentcategories', function ($query) use ($parentCatId) {
+            $categoryListByParentCatId = SubCategory::select('id', 'name')->whereHas('parentcategories', function ($query) use ($parentCatId) {
                 $query->where('category_id', $parentCatId);
             })
                 ->where('status', SubCategory::STATUS_ACTIVE)
@@ -255,14 +256,14 @@ class ProductController extends Controller
                 'status' => false,
                 'data' => [],
                 'message' => 'Error Query..! ' . $e->getMessage()
-            ],(!empty($e->getCode())) ? $e->getCode() : 401);
+            ], (!empty($e->getCode())) ? $e->getCode() : 401);
         } catch (\Exception $e) { // Handle any runtime exception
             \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error deleting data : " . $e->getMessage() . '');
             return response()->json([
                 'status' => false,
                 'data' => [],
                 'message' => 'Error Triggers..! ' . $e->getMessage()
-            ],(!empty($e->getCode())) ? $e->getCode() : 401);
+            ], (!empty($e->getCode())) ? $e->getCode() : 401);
         }
     }
 }
