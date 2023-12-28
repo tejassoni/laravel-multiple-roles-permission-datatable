@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Image extends Model
+class ProductImagePivot extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class Image extends Model
      *
      * @var string
      */
-    protected $table = 'image_product';
+    protected $table = 'product_image_pivot';
 
     /**
      * The attributes that are mass assignable.

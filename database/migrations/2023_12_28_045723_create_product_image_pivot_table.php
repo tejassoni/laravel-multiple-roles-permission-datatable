@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('image_product', function (Blueprint $table) {
+        Schema::create('product_image_pivot', function (Blueprint $table) {
             $table->id();
             $table->integer('product_id')->unsigned()->nullable();
             $table->string('filename')->nullable();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('image_product');
+        Schema::dropIfExists('product_image_pivot');
     }
 };

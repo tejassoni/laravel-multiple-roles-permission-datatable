@@ -6,10 +6,11 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Models\ProductImagePivot;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
-use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
@@ -61,12 +62,13 @@ class ProductController extends Controller
                 $filehandle = $this->_multipleFileUploads($request, 'images', 'public/products');
                 if($filehandle['status']){                    
                     foreach($filehandle['data'] as $keyFile => $valFile) { 
-                        $productImgsDetailsArr[] = ['filename' => $valFile['name'],'filemeta' => json_encode($valFile),'product_id' => $created->id];          
-                    } 
+                        $productImgsDetailsArr[] = ['filename' => $valFile['name'],'filemeta' => json_encode($valFile),'product_id' => $created->id,'created_at' => now(),'updated_at' => now()];          
+                    }                    
+                    // Insert Bulk Product Images data
+                    ProductImagePivot::insertOrIgnore($productImgsDetailsArr);
                 }                
             }
-            $created->images()->sync($productImgsDetailsArr);
-            dd('done');
+            
             // prepare cateogy_product table relational data logic
             $productCategoriesArr = [];
             foreach($request->select_parent_cat as $keyCat => $valCat ) {   
