@@ -60,7 +60,7 @@
                     <thead>
                         <tr class="bg-gray-100">
                             <th class="px-4 py-2 border">Name</th>
-                            <th class="px-4 py-2 border">Category</th>
+                            <th class="px-4 py-2 border">Parent and Sub Category</th>
                             <th class="px-4 py-2 border">Image</th>
                             <th class="px-4 py-2 border">Price</th>
                             <th class="px-4 py-2 border">Quantity</th>
@@ -71,11 +71,27 @@
                         @foreach ($products as $product)
                             <tr>
                                 <td class="px-4 py-2 border">{{ $product->name }}</td>
-                                <td class="px-4 py-2 border">{{ $product->getParentCategoryHasOne->name ?? '' }}</td>
-
-                                <td class="px-4 py-2 border"><img
-                                        src="{{ asset('storage/products/' . $product->image) }}" heigth="150"
-                                        width="150" /></td>
+                                <td class="px-4 py-2 border">
+                                    @php
+                                       if($product->category->isNotEmpty()){
+                                            foreach ($product->category as $keyParentCat => $valParentCat) {
+                                                echo "Parent Category :: ".$valParentCat->name."<br>";
+                                                if($valParentCat->subcategories->isNotEmpty()){
+                                                    foreach($valParentCat->subcategories as $keySubCat => $valSubCat ) { 
+                                                        echo "Sub Category :: ".$valSubCat->name."<br>";
+                                                    } // Loops Ends
+                                                }
+                                            }
+                                       } 
+                                    @endphp        
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    @php
+                                        $firstImage = ($product->getProductImagesHasMany->isNotEmpty()) ? $product->getProductImagesHasMany[0]->filename : '';
+                                    @endphp
+                                    <img
+                                        src="{{ asset('storage/products/'.$firstImage) }}" heigth="75"
+                                        width="75" /></td>
                                 <td class="px-4 py-2 border">{{ $product->price }}</td>
                                 <td class="px-4 py-2 border">{{ $product->qty }}</td>
                                 <td class="px-4 py-2 border">

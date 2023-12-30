@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Category;
 use App\Models\Image;
+use App\Models\Category;
+use App\Models\ProductImagePivot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -23,25 +24,17 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'description', 'parent_category_id','sub_category_id','image','price','qty','status','user_id'];
+    protected $fillable = ['name', 'description', 'parent_category_id', 'sub_category_id', 'image', 'price', 'qty', 'status', 'user_id'];
 
     /**
      * The attributes that aren't mass assignable.
      *
      * @var array
      */
-    protected $guarded = ['created_at','updated_at'];
+    protected $guarded = ['created_at', 'updated_at'];
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
-    
-    /**
-     * Sub category to Parent category relationship with hasOne
-     */
-    public function getParentCatHasOne()
-    {
-        return $this->hasOne(Category::class, 'id', 'category_id');
-    }
 
     /**
      * Sub category to User relationship with hasOne
@@ -51,12 +44,16 @@ class Product extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    public function getParentCategoryHasOne()
+    /*
+    * get Products all related images from ProductImagePivot Table
+    */
+    public function getProductImagesHasMany()
     {
-    return $this->hasOne(Category::class, 'id', 'category_id');
+        return $this->hasMany(ProductImagePivot::class, 'product_id','id');
     }
 
-    public function category(){
-        return $this->belongsToMany(Category::class);
-    }    
+    public function category()
+    {
+        return $this->belongsToMany(Category::class)->withPivot('sub_category_id');
+    }
 }

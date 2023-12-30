@@ -35,7 +35,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['getParentCategoryHasOne'])->orderBy('updated_at', 'desc')->get();
+        $products = Product::with(['getProductImagesHasMany','category.subcategories'])->orderBy('updated_at', 'desc')->get();
         return view('products.index', compact('products'));
     }
 
