@@ -12,35 +12,57 @@
                     Go back
                 </a>
                 <div class="mb-4">
-                    <label for="name" class="block mb-2 text-sm font-bold text-gray-700 inline-flex">Product Name :
+                    <label for="name"
+                        class="block mb-2 text-sm font-bold text-gray-700 inline-flex font-semibold">Product Name :
                     </label>
                     <span>{{ $product->name }}</span>
                 </div>
 
                 <div class="mb-4">
-                    <label for="description" class="block mb-2 text-sm font-bold text-gray-700 inline-flex">{{ __('Description') }} :
+                    <label for="description"
+                        class="block mb-2 text-sm font-bold text-gray-700 inline-flex font-semibold">{{ __('Description') }}
+                        :
                     </label>
                     <span>{{ $product->description }}</span>
                 </div>
 
-                <div class="mb-4">
-                    <label for="image" class="block mb-2 text-sm font-bold text-gray-700">Image "</label>
-                    <img src="{{ asset('storage/products/' . $product->image) }}" heigth="150" width="150" />
+                <div class="mb-4 flex">
+                    <label for="image" class="block mb-2 text-sm font-bold text-gray-700 font-semibold">Image
+                        :</label>
+                    @if ($product->getProductImagesHasMany->isNotEmpty())
+                        @foreach ($product->getProductImagesHasMany as $prodImg)
+                            <img src="{{ asset('storage/products/' . $prodImg->filename) }}" heigth="150"
+                                width="150" />&nbsp;&nbsp;&nbsp;
+                        @endforeach
+                    @else
+                        <span>No Images Uploaded...!</span>
+                    @endif
                 </div>
 
                 <div class="mb-4">
-                    <label for="parentcategory_name"
-                        class="block mb-2 text-sm font-bold text-gray-700 inline-flex">{{ __('Parent category') }} : </label>
-                     <span>{{ $product->getParentCatHasOne->name }}</span>
+                    @php
+                        if ($product->category->isNotEmpty()) {
+                            foreach ($product->category as $keyParentCat => $valParentCat) {
+                                echo '<span><b>Parent Category :: </b></span>' . $valParentCat->name . '<br>';
+                                if ($valParentCat->subcategories->isNotEmpty()) {
+                                    foreach ($valParentCat->subcategories as $keySubCat => $valSubCat) {
+                                        echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><b>Sub Category :: </b></span><i>' . $valSubCat->name . '</i><br>';
+                                    } // Loops Ends
+                                }
+                            }
+                        }
+                    @endphp
                 </div>
 
                 <div class="mb-4">
-                    <label for="price" class="block mb-2 text-sm font-bold text-gray-700 inline-flex">Price </label>
-                    <span>{{ $product->price }}</span>                    
+                    <label for="price"
+                        class="block mb-2 text-sm font-bold text-gray-700 inline-flex font-semibold">Price : </label>
+                    <span>{{ $product->price }}</span>
                 </div>
 
                 <div class="mb-4">
-                    <label for="qty" class="block mb-2 text-sm font-bold text-gray-700 inline-flex">Quantity </label>
+                    <label for="qty"
+                        class="block mb-2 text-sm font-bold text-gray-700 inline-flex font-semibold">Quantity : </label>
                     <span>{{ $product->qty }}</span>
                 </div>
             </div>

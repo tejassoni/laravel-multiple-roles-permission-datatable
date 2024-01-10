@@ -22,19 +22,31 @@ class Category extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'description', 'status','user_id'];
+    protected $fillable = ['name', 'description', 'status', 'user_id'];
 
     /**
      * The attributes that aren't mass assignable.
      *
      * @var array
      */
-    protected $guarded = ['created_at','updated_at'];
+    protected $guarded = ['created_at', 'updated_at'];
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
-    public function subcategories(){
+    public function subcategories()
+    {
         return $this->belongsToMany(SubCategory::class);
+    }
+
+    public function getAllSubCategories()
+    {
+        return $this->hasMany(SubCategory::class);
+    }
+
+    // Category model
+    public function products()
+    {
+        return $this->belongsToMany(Product::class)->withPivot('sub_category_id');
     }
 }

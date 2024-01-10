@@ -23,7 +23,8 @@ class ProductUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:100',            
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Max file size in kilobytes
+            'images' => 'array|max:10', // Limit 10 images for example
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Max file size in kilobytes
             'select_parent_cat' => 'required',
             'price' => ['required', 'numeric', 'regex:/^\d*(\.\d{1,2})?$/','min:1','max:9999999999.99'], // Allows numbers and decimals with up to 2 decimal places        
             'qty' => ['required', 'numeric', 'regex:/^\d*(\.\d{1,2})?$/','min:1','max:4294967295'],    

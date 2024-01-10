@@ -35,7 +35,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['getProductImagesHasMany','category.subcategories'])->orderBy('updated_at', 'desc')->get();
+        $products = Product::with(['getProductImagesHasMany', 'category.subcategories'])->orderBy('updated_at', 'desc')->get();
         return view('products.index', compact('products'));
     }
 
@@ -105,7 +105,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->with('getParentCatHasOne')->where('user_id', auth()->user()->id);
+        $product->with(['getProductImagesHasMany', 'category.subcategories']);
         return view('products.show', compact('product'));
     }
 
@@ -114,8 +114,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $product->with(['getProductImagesHasMany', 'category.subcategories']);
         $parent_category = Category::where('status', Category::STATUS_ACTIVE)->get();
-        //$subCategories = SubCategory::where('status', SubCategory::STATUS_ACTIVE)->get();
         return view('products.edit', compact('product', 'parent_category'));
     }
 
@@ -124,16 +124,37 @@ class ProductController extends Controller
      */
     public function update(ProductUpdateRequest $request, Product $product)
     {
-        try {
-            $fileName = $product->image;
-            if ($request->hasFile('image')) {
-                if (Storage::exists('/public/products/' . $product->image)) {
-                    Storage::delete('/public/products/' . $product->image);
+        try {            
+            if ($request->filled('img_delete')) { // multiple files delete from database and storage folders
+                $imageIds = explode(',', $request->img_delete);
+                $storageFolder = '/public/products/';
+                $this->deleteMultipleImages($imageIds, $storageFolder);
+            }            
+            
+            if ($request->hasFile('images')) { // // multiple images upload at storage folder and add data to table
+                $filehandle = $this->_multipleFileUploads($request, 'images', 'public/products/');
+                if ($filehandle['status']) { // files are uploaded successfully
+                    $productImgsDetailsArr = [];
+                    foreach ($filehandle['data'] as $valFile) {
+                        $productImgsDetailsArr[] = ['filename' => $valFile['name'], 'filemeta' => json_encode($valFile), 'product_id' => $product->id, 'created_at' => now(), 'updated_at' => now()];
+                    }
+                    // Insert Bulk Product Images data
+                    ProductImagePivot::insertOrIgnore($productImgsDetailsArr);
                 }
-                $filehandle = $this->_singleFileUploads($request, 'image', 'public/products');
-                $fileName = $filehandle['data']['name'];
             }
-            $product->update(['name' => $request->name, 'description' => $request->description, 'image' => $fileName, 'parent_category_id' => $request->select_parent_cat, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
+            // delete all previous related categories and sub category relationship
+            $product->category()->detach();
+             // prepare cateogy_product table relational data logic
+             $productCategoriesArr = [];
+             foreach ($request->select_parent_cat as $keyCat => $valCat) {
+                 $productCategoriesArr[] = ['product_id' => $product->id,'category_id' => $valCat, 'sub_category_id' => $request->select_sub_cat[$keyCat]];
+             }             
+             // insert cateogy_product table relational data
+             if (sizeof($productCategoriesArr) > 0) {
+                $product->category()->sync($productCategoriesArr);
+             }
+
+             $product->update(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
 
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success updating data : " . json_encode([request()->all(), $product]));
 
@@ -152,6 +173,25 @@ class ProductController extends Controller
                 ->back()
                 ->withInput()
                 ->with('error', "error occurs failed to proceed...! " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete multiple images from database and storage folder
+     */
+    public static function deleteMultipleImages($imageIds = [], $storageFolder = "")
+    {
+        if (sizeof($imageIds) > 0 && !empty($storageFolder)) {
+            $fileNames = [];
+            foreach ($imageIds as $valImg) {
+                $prodImg = ProductImagePivot::find($valImg);
+                if (Storage::exists($storageFolder . $prodImg->filename)) {
+                    $fileNames[] = storage_path($storageFolder . $prodImg->filename);
+                    Storage::delete($storageFolder . $prodImg->filename);
+                }
+                $prodImg->delete();
+            } // Loops Ends        
+            \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success delete data : " . json_encode(['deletedIds' => $imageIds, 'deletedFiles' => $fileNames]));
         }
     }
 

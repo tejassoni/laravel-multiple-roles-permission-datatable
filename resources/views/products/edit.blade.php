@@ -47,7 +47,7 @@
                             name="name" placeholder="Enter Product name" value="{{ old('name', $product->name) }}"
                             required>
                         @error('name')
-                            <span class="text-red-600">{{ $message }}
+                            <span class="text-red-600 text-danger">{{ $message }}
                             </span>
                         @enderror
                     </div>
@@ -60,36 +60,142 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="image" class="block mb-2 text-sm font-bold text-gray-700">Image </label>
-                        <img src="{{ asset('storage/products/' . $product->image) }}" heigth="100" width="100" />
+                        <label for="images" class="block mb-2 text-sm font-bold text-gray-700">Product Images</label>
                         <input type="file"
-                            class="w-50 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                            name="image" accept=".jpg, .png, .jpeg, .gif">
-                        @error('image')
-                            <span class="text-red-600">{{ $message }}
-                            </span>
-                        @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="parentcategory_name"
-                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Parent category') }} <span
-                                class="text-red-600">*</span></label>
-                        <select class="form-select" name="select_parent_cat" id="select_parent_cat" required>
-                            <option readonly disabled>{{ __('Select Parent category') . '--' }}</option>
-                            @foreach ($parent_category as $parent_cat)
-                                <option value="{{ $parent_cat->id }}"
-                                    @if (old('select_parent_cat') && $parent_cat->id == old('select_parent_cat')) selected
-                                    @elseif(!old('select_parent_cat') && $parent_cat->id == $product->parent_category_id)
-                                        selected @endif>
-                                    {{ $parent_cat->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('select_parent_cat')
+                            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                            name="images[]" accept=".jpg, .png, .jpeg, .gif" multiple>
+                        @if ($product->getProductImagesHasMany->isNotEmpty())
+                            <div class="flex mt-4">
+                                <input type="hidden" name="img_delete" id="img_delete" value="">
+                                @foreach ($product->getProductImagesHasMany as $imgVal)
+                                    <div class="img_{{ $imgVal->id }}">
+                                        <button type="button" class="btn btn-outline-danger btn-sm img_close"
+                                            data="{{ $imgVal->id }}" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            <img class="mx-6"
+                                                src="{{ asset('storage/products/' . $imgVal->filename) }}"
+                                                heigth="75" width="75" />
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                        @error('images')
                             <span class="text-red-600 text-danger">{{ $message }}
                             </span>
                         @enderror
                     </div>
+
+                    <!-- KEY :: DYNAMICMULTIROW Starts -->
+                    <table id="dynamicAddRemoveTbl"
+                        class="w-full table-fixed display cell-border row-border stripe mb-4 mt-4">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2 border" colspan="3">
+                                    <label for="add-row" class="block mb-2 text-sm font-bold text-gray-700"><a
+                                            id="add-row"
+                                            class="inline-flex items-center px-4 py-2 mx-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-500 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25 btn btn-sm btn-info">Add
+                                            New</a></label>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="px-4 py-2 border">Category</th>
+                                <th class="px-4 py-2 border">Sub Category</th>
+                                <th class="px-4 py-2 border">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- This Row is Use for Clone Rows and Ignored to display on initialize page -->
+                            <tr id="row-template" class="bg-gray-100" style="display:none;">
+                                <td class="px-4 py-2 border">
+                                    <div class="mb-4">
+                                        <label for="parentcategory_name"
+                                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Parent category') }}
+                                            <span class="text-red-600">*</span></label>
+                                        <select class="form-select select_parent_cat" name="select_parent_cat[]"
+                                            class="select_parent_cat">
+                                            <option selected readonly disabled>
+                                                {{ __('Select Parent category') . '--' }}</option>
+                                            @foreach ($parent_category as $parent_cat)
+                                                <option value="{{ $parent_cat->id }}"
+                                                    {{ old('select_parent_cat') == $parent_cat->id ? 'selected' : '' }}>
+                                                    {{ $parent_cat->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <div class="mb-4">
+                                        <label for="subcategory_name"
+                                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Sub category') }}
+                                            <span class="text-red-600">*</span></label>
+                                        <select class="form-select select_sub_cat" name="select_sub_cat[]"
+                                            class="select_sub_cat">
+                                            <option selected readonly disabled>{{ __('Select Sub category') . '--' }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2 border"><button
+                                        class="remove-row inline-flex items-center px-4 py-2 mx-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-red-600 border border-transparent rounded-md hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:shadow-outline-gray disabled:opacity-25">Remove</button>
+                                </td>
+                            </tr>
+                            <!-- This Row is Use for Clone Rows and Ignored to display on initialize page -->
+
+                            <!-- Edit Categories already exist starts -->
+                            @if ($product->category->isNotEmpty())
+                                @foreach ($product->category as $parentCat)
+                                    @if ($parentCat->subcategories->isNotEmpty())
+                                        @foreach ($parentCat->subcategories as $subCat)
+                                            <tr id="row-template" class="bg-gray-100">
+                                                <td class="px-4 py-2 border">
+                                                    <div class="mb-4">
+                                                        <label for="parentcategory_name"
+                                                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Parent category') }}
+                                                            <span class="text-red-600">*</span></label>
+                                                        <select class="form-select select_parent_cat"
+                                                            name="select_parent_cat[]" class="select_parent_cat">
+                                                            <option selected readonly disabled>
+                                                                {{ __('Select Parent category') . '--' }}</option>
+                                                            @foreach ($parent_category as $parent_cat)
+                                                                <option value="{{ $parent_cat->id }}"
+                                                                    {{ $parentCat->id == $parent_cat->id ? 'selected' : '' }}>
+                                                                    {{ $parent_cat->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-2 border">
+                                                    <div class="mb-4">
+                                                        <label for="subcategory_name"
+                                                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Sub category') }}
+                                                            <span class="text-red-600">*</span></label>
+                                                        <select class="form-select select_sub_cat"
+                                                            name="select_sub_cat[]" class="select_sub_cat">
+                                                            <option selected readonly disabled>
+                                                                {{ __('Select Sub category') . '--' }}
+                                                            </option>
+                                                            <!-- All Parent's Sub Category option lists appends starts -->
+                                                            @foreach ($parentCat->subcategories as $subCatLists)
+                                                            <option value="{{ $subCatLists->id }}" {{ $subCatLists->id == $subCat->id ? 'selected' : '' }}>
+                                                                {{ $subCatLists->name }}</option>
+                                                            @endforeach
+                                                            <!-- All Parent's Sub Category option lists appends ends -->
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-2 border"><button
+                                                        class="remove-row inline-flex items-center px-4 py-2 mx-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-red-600 border border-transparent rounded-md hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:shadow-outline-gray disabled:opacity-25">Remove</button>
+                                                </td>
+                                            </tr>
+                                        @endforeach <!-- Sub Category Loop Ends -->
+                                    @endif
+                                @endforeach <!-- Parent Category Loop Ends -->
+                            @endif
+                            <!-- Edit Categories already exist Ends -->
+                        </tbody>
+                    </table>
+                    <!-- KEY :: DYNAMICMULTIROW Ends -->
 
                     <div class="mb-4">
                         <label for="price" class="block mb-2 text-sm font-bold text-gray-700">Price <span
@@ -99,7 +205,7 @@
                             name="price" min="1" maxlength="13" placeholder="Enter Product price"
                             value="{{ old('price', $product->price) }}" required>
                         @error('price')
-                            <span class="text-red-600">{{ $message }}
+                            <span class="text-red-600 text-danger">{{ $message }}
                             </span>
                         @enderror
                     </div>
@@ -112,7 +218,7 @@
                             name="qty" min="1" max="4294967295" placeholder="Enter Product Quantity"
                             value="{{ old('qty', $product->qty) }}" required>
                         @error('qty')
-                            <span class="text-red-600">{{ $message }}
+                            <span class="text-red-600 text-danger">{{ $message }}
                             </span>
                         @enderror
                     </div>
@@ -127,4 +233,79 @@
             </div>
         </div>
     </div>
+    {{-- KEY : DYNAMICMULTIROW Starts --}}
+    @push('footer-scripts')
+        <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // after image preview on close hide image
+                $(document).on('click', '.img_close', function() {
+                    var img_div_id = $(this).attr('data');
+                    $('.img_' + img_div_id).hide();
+                    if ($('#img_delete').val().length != 0) { // value not empty
+                        var ids = [$('#img_delete').val(), img_div_id];
+                    } else {
+                        var ids = [img_div_id];
+                    }
+
+                    var idsString = ids.join(',');
+                    $('#img_delete').val(idsString);
+                });
+
+                  // Add Row Btn 
+             $(document).on('click', '#add-row', function() {
+                 var row = $('#row-template').clone();
+                 row.removeAttr('id').show();
+                 $('#dynamicAddRemoveTbl tbody').append(row);
+             });
+             // Remove Row Btn 
+             $(document).on('click', '.remove-row', function() {
+                 if ($('#dynamicAddRemoveTbl tbody tr').length > 2) { // Check if more than one row exists
+                     $(this).closest('tr').remove(); // Remove only if multiple rows are present
+                 } else { // Provide feedback to the user, such as displaying a message:
+                     alert("Cannot remove the last row.");
+                 }
+             });
+
+             // parent category on change bind sub category data by ajax
+             $(document).on('change', '.select_parent_cat', function() {
+                 var closestTr = $(this).closest('tr');
+                 var selectOptions =
+                     '<option selected="" readonly="" disabled="">Select Sub category-- </option>';
+                 if ($(this).val() != '') { // check value is not empty then send ajax request
+                     $.ajax({
+                         type: 'POST',
+                         url: '{{ url('/getsubcategories') }}',
+                         data: {
+                             category_id: $(this).val()
+                         },
+                         dataType: 'json',
+                         headers: {
+                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                             '_method': 'post'
+                         },
+                         beforeSend: function() { // Before ajax send operation
+                             closestTr.find('.select_sub_cat').html(selectOptions);
+                         },
+                         success: function(data_resp, textStatus,
+                             jqXHR) { // On ajax success operation
+                             data_resp.data.forEach(function(valueObj, index) {
+                                 selectOptions += '<option value="' + valueObj.id +
+                                     '" >' +
+                                     valueObj.name + '</option>'
+                             });
+                             // bind final options to select
+                             closestTr.find('.select_sub_cat').html(selectOptions);
+                         },
+                         error: function(jqXHR, textStatus,
+                             errorThrown) { // On ajax error operation 
+                             closestTr.find('.select_sub_cat').html(selectOptions);
+                         }
+                     });
+                 }
+             });
+            });
+        </script>
+    @endpush     
+    {{-- KEY : DYNAMICMULTIROW Ends --}}
 </x-app-layout>

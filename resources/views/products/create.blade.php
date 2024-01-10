@@ -57,12 +57,12 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="image" class="block mb-2 text-sm font-bold text-gray-700">Image <span
+                        <label for="images" class="block mb-2 text-sm font-bold text-gray-700">Product images <span
                                 class="text-red-600">*</span></label>
                         <input type="file"
                             class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                             name="images[]" accept=".jpg, .png, .jpeg, .gif" multiple required>
-                        @error('image')
+                        @error('images')
                             <span class="text-red-600">{{ $message }}
                             </span>
                         @enderror

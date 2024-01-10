@@ -73,25 +73,29 @@
                                 <td class="px-4 py-2 border">{{ $product->name }}</td>
                                 <td class="px-4 py-2 border">
                                     @php
-                                       if($product->category->isNotEmpty()){
+                                        if ($product->category->isNotEmpty()) {
                                             foreach ($product->category as $keyParentCat => $valParentCat) {
-                                                echo "Parent Category :: ".$valParentCat->name."<br>";
-                                                if($valParentCat->subcategories->isNotEmpty()){
-                                                    foreach($valParentCat->subcategories as $keySubCat => $valSubCat ) { 
-                                                        echo "Sub Category :: ".$valSubCat->name."<br>";
+                                                echo 'Parent Category :: ' . $valParentCat->name . '<br>';
+                                                if ($valParentCat->subcategories->isNotEmpty()) {
+                                                    foreach ($valParentCat->subcategories as $keySubCat => $valSubCat) {
+                                                        echo 'Sub Category :: ' . $valSubCat->name . '<br>';
                                                     } // Loops Ends
                                                 }
                                             }
-                                       } 
-                                    @endphp        
+                                        }
+                                    @endphp
                                 </td>
                                 <td class="px-4 py-2 border">
                                     @php
-                                        $firstImage = ($product->getProductImagesHasMany->isNotEmpty()) ? $product->getProductImagesHasMany[0]->filename : '';
+                                        $firstImg = ($product->getProductImagesHasMany->isNotEmpty()) ? $product->getProductImagesHasMany[0]->filename : 'null';
                                     @endphp
-                                    <img
-                                        src="{{ asset('storage/products/'.$firstImage) }}" heigth="75"
-                                        width="75" /></td>
+                                    <object
+                                        data="{{ asset('storage/products/' . $firstImg) }}"
+                                        type="image/jpeg" height="100" width="100" title="image">
+                                        <img src="https://dummyimage.com/150x150/d4d4d4/090a12&text=sample"
+                                            alt="Image description">
+                                    </object>
+                                </td>
                                 <td class="px-4 py-2 border">{{ $product->price }}</td>
                                 <td class="px-4 py-2 border">{{ $product->qty }}</td>
                                 <td class="px-4 py-2 border">
