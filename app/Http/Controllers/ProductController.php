@@ -8,6 +8,7 @@ use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\ProductImagePivot;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
@@ -142,20 +143,16 @@ class ProductController extends Controller
                     ProductImagePivot::insertOrIgnore($productImgsDetailsArr);
                 }
             }
-            // delete all previous related categories and sub category relationship
+            // delete existed assigned product's category
             $product->category()->detach();
              // prepare cateogy_product table relational data logic
              $productCategoriesArr = [];
-             foreach ($request->select_parent_cat as $keyCat => $valCat) {
-                 $productCategoriesArr[] = ['product_id' => $product->id,'category_id' => $valCat, 'sub_category_id' => $request->select_sub_cat[$keyCat]];
-             }             
-             // insert cateogy_product table relational data
-             if (sizeof($productCategoriesArr) > 0) {
-                $product->category()->sync($productCategoriesArr);
-             }
-
+             foreach ($request->select_parent_cat as $keyParentCat => $valParentCat) {
+                $product->category()->attach($valParentCat,['sub_category_id' =>$request->select_sub_cat[$keyParentCat]]);
+             } 
+             // final update of product master table
              $product->update(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
-
+             
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success updating data : " . json_encode([request()->all(), $product]));
 
             return redirect()->route('products.index')
