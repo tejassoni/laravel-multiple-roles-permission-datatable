@@ -115,7 +115,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->with(['getProductImagesHasMany', 'category.subcategories']);
+        $product->with(['getProductImagesHasMany', 'category.subcategories']);        
         $parent_category = Category::where('status', Category::STATUS_ACTIVE)->get();
         return view('products.edit', compact('product', 'parent_category'));
     }
@@ -145,14 +145,13 @@ class ProductController extends Controller
             }
             // delete existed assigned product's category
             $product->category()->detach();
-             // prepare cateogy_product table relational data logic
-             $productCategoriesArr = [];
+             // prepare cateogy_product table relational data logic             
              foreach ($request->select_parent_cat as $keyParentCat => $valParentCat) {
                 $product->category()->attach($valParentCat,['sub_category_id' =>$request->select_sub_cat[$keyParentCat]]);
              } 
              // final update of product master table
              $product->update(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
-             
+
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success updating data : " . json_encode([request()->all(), $product]));
 
             return redirect()->route('products.index')
@@ -199,6 +198,8 @@ class ProductController extends Controller
     {
         try {
             $product->delete();
+            // delete existed assigned product's category
+            $product->category()->detach();
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success deleting data : " . json_encode([request()->all(), $product]));
             return redirect()->route('products.index')
                 ->withSuccess('Deleted Successfully.');

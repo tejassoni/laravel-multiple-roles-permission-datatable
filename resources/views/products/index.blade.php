@@ -72,26 +72,34 @@
                             <tr>
                                 <td class="px-4 py-2 border">{{ $product->name }}</td>
                                 <td class="px-4 py-2 border">
-                                    @php
-                                        if ($product->category->isNotEmpty()) {
-                                            foreach ($product->category as $keyParentCat => $valParentCat) {
-                                                echo 'Parent Category :: ' . $valParentCat->name . '<br>';
-                                                if ($valParentCat->subcategories->isNotEmpty()) {
-                                                    foreach ($valParentCat->subcategories as $keySubCat => $valSubCat) {
-                                                        echo 'Sub Category :: ' . $valSubCat->name . '<br>';
-                                                    } // Loops Ends
-                                                }
-                                            }
-                                        }
-                                    @endphp
+                                    @if ($product->category->isNotEmpty())
+                                        @php $isParentCatExist = []; @endphp
+                                        @foreach ($product->category as $parentCat)
+                                            @if (!in_array($parentCat->name, $isParentCatExist))
+                                                <span><b>Parent Category :: </b></span>
+                                                {{ $parentCat->name }} <br>
+                                            @endif
+                                            @php
+                                                $isParentCatExist[] = $parentCat->name;
+                                            @endphp
+                                            @if ($parentCat->subcategories->isNotEmpty())
+                                                @foreach ($parentCat->subcategories as $subCat)
+                                                    @if ($parentCat->pivot->category_id == $parentCat->id && $parentCat->pivot->sub_category_id == $subCat->id)
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <span><b>Sub Category :: </b></span><i> {{ $subCat->name }} </i>
+                                                        <br>
+                                                    @endif
+                                                @endforeach <!-- Sub Category Loop Ends -->
+                                            @endif
+                                        @endforeach <!-- Parent Category Loop Ends -->
+                                    @endif
                                 </td>
                                 <td class="px-4 py-2 border">
                                     @php
-                                        $firstImg = ($product->getProductImagesHasMany->isNotEmpty()) ? $product->getProductImagesHasMany[0]->filename : 'null';
+                                        $firstImg = $product->getProductImagesHasMany->isNotEmpty() ? $product->getProductImagesHasMany[0]->filename : 'null';
                                     @endphp
-                                    <object
-                                        data="{{ asset('storage/products/' . $firstImg) }}"
-                                        type="image/jpeg" height="100" width="100" title="image">
+                                    <object data="{{ asset('storage/products/' . $firstImg) }}" type="image/jpeg"
+                                        height="100" width="100" title="image">
                                         <img src="https://dummyimage.com/150x150/d4d4d4/090a12&text=sample"
                                             alt="Image description">
                                     </object>

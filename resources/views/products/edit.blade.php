@@ -145,51 +145,48 @@
                             <!-- Edit Categories already exist starts -->
                             @if ($product->category->isNotEmpty())
                                 @foreach ($product->category as $parentCat)
-                                    @if ($parentCat->subcategories->isNotEmpty())
-                                        @foreach ($parentCat->subcategories as $subCat)
-                                            <tr id="row-template" class="bg-gray-100">
-                                                <td class="px-4 py-2 border">
-                                                    <div class="mb-4">
-                                                        <label for="parentcategory_name"
-                                                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Parent category') }}
-                                                            <span class="text-red-600">*</span></label>
-                                                        <select class="form-select select_parent_cat"
-                                                            name="select_parent_cat[]" class="select_parent_cat">
-                                                            <option selected readonly disabled>
-                                                                {{ __('Select Parent category') . '--' }}</option>
-                                                            @foreach ($parent_category as $parent_cat)
-                                                                <option value="{{ $parent_cat->id }}"
-                                                                    {{ $parentCat->id == $parent_cat->id ? 'selected' : '' }}>
-                                                                    {{ $parent_cat->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-2 border">
-                                                    <div class="mb-4">
-                                                        <label for="subcategory_name"
-                                                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Sub category') }}
-                                                            <span class="text-red-600">*</span></label>
-                                                        <select class="form-select select_sub_cat"
-                                                            name="select_sub_cat[]" class="select_sub_cat">
-                                                            <option selected readonly disabled>
-                                                                {{ __('Select Sub category') . '--' }}
-                                                            </option>
-                                                            <!-- All Parent's Sub Category option lists appends starts -->
-                                                            @foreach ($parentCat->subcategories as $subCatLists)
-                                                            <option value="{{ $subCatLists->id }}" {{ $subCatLists->id == $subCat->id ? 'selected' : '' }}>
-                                                                {{ $subCatLists->name }}</option>
-                                                            @endforeach
-                                                            <!-- All Parent's Sub Category option lists appends ends -->
-                                                        </select>
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-2 border"><button
-                                                        class="remove-row inline-flex items-center px-4 py-2 mx-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-red-600 border border-transparent rounded-md hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:shadow-outline-gray disabled:opacity-25">Remove</button>
-                                                </td>
-                                            </tr>
-                                        @endforeach <!-- Sub Category Loop Ends -->
-                                    @endif
+                                    <tr id="row-template" class="bg-gray-100">
+                                        <td class="px-4 py-2 border">
+                                            <div class="mb-4">
+                                                <label for="parentcategory_name"
+                                                    class="block mb-2 text-sm font-bold text-gray-700">{{ __('Parent category') }}
+                                                    <span class="text-red-600">*</span></label>
+                                                <select class="form-select select_parent_cat" name="select_parent_cat[]"
+                                                    class="select_parent_cat">
+                                                    <option selected readonly disabled>
+                                                        {{ __('Select Parent category') . '--' }}</option>
+                                                    @foreach ($parent_category as $parent_cat)
+                                                        <option value="{{ $parent_cat->id }}"
+                                                            {{ $parentCat->id == $parent_cat->id ? 'selected' : '' }}>
+                                                            {{ $parent_cat->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-2 border">
+                                            <div class="mb-4">
+                                                <label for="subcategory_name"
+                                                    class="block mb-2 text-sm font-bold text-gray-700">{{ __('Sub category') }}
+                                                    <span class="text-red-600">*</span></label>
+                                                <select class="form-select select_sub_cat" name="select_sub_cat[]"
+                                                    class="select_sub_cat">
+                                                    <option selected readonly disabled>
+                                                        {{ __('Select Sub category') . '--' }}
+                                                    </option>
+                                                    @if ($parentCat->subcategories->isNotEmpty())
+                                                        @foreach ($parentCat->subcategories as $subCat)
+                                                            <option value="{{ $subCat->id }}"
+                                                                {{ $parentCat->pivot->category_id == $parentCat->id && $parentCat->pivot->sub_category_id == $subCat->id ? 'selected' : '' }}>
+                                                                {{ $subCat->name }} </option>
+                                                        @endforeach <!-- Sub Category Loop Ends -->
+                                                    @endif
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-2 border"><button
+                                                class="remove-row inline-flex items-center px-4 py-2 mx-2 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-red-600 border border-transparent rounded-md hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:shadow-outline-gray disabled:opacity-25">Remove</button>
+                                        </td>
+                                    </tr>
                                 @endforeach <!-- Parent Category Loop Ends -->
                             @endif
                             <!-- Edit Categories already exist Ends -->
@@ -252,60 +249,60 @@
                     $('#img_delete').val(idsString);
                 });
 
-                  // Add Row Btn 
-             $(document).on('click', '#add-row', function() {
-                 var row = $('#row-template').clone();
-                 row.removeAttr('id').show();
-                 $('#dynamicAddRemoveTbl tbody').append(row);
-             });
-             // Remove Row Btn 
-             $(document).on('click', '.remove-row', function() {
-                 if ($('#dynamicAddRemoveTbl tbody tr').length > 2) { // Check if more than one row exists
-                     $(this).closest('tr').remove(); // Remove only if multiple rows are present
-                 } else { // Provide feedback to the user, such as displaying a message:
-                     alert("Cannot remove the last row.");
-                 }
-             });
+                // Add Row Btn 
+                $(document).on('click', '#add-row', function() {
+                    var row = $('#row-template').clone();
+                    row.removeAttr('id').show();
+                    $('#dynamicAddRemoveTbl tbody').append(row);
+                });
+                // Remove Row Btn 
+                $(document).on('click', '.remove-row', function() {
+                    if ($('#dynamicAddRemoveTbl tbody tr').length > 2) { // Check if more than one row exists
+                        $(this).closest('tr').remove(); // Remove only if multiple rows are present
+                    } else { // Provide feedback to the user, such as displaying a message:
+                        alert("Cannot remove the last row.");
+                    }
+                });
 
-             // parent category on change bind sub category data by ajax
-             $(document).on('change', '.select_parent_cat', function() {
-                 var closestTr = $(this).closest('tr');
-                 var selectOptions =
-                     '<option selected="" readonly="" disabled="">Select Sub category-- </option>';
-                 if ($(this).val() != '') { // check value is not empty then send ajax request
-                     $.ajax({
-                         type: 'POST',
-                         url: '{{ url('/getsubcategories') }}',
-                         data: {
-                             category_id: $(this).val()
-                         },
-                         dataType: 'json',
-                         headers: {
-                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                             '_method': 'post'
-                         },
-                         beforeSend: function() { // Before ajax send operation
-                             closestTr.find('.select_sub_cat').html(selectOptions);
-                         },
-                         success: function(data_resp, textStatus,
-                             jqXHR) { // On ajax success operation
-                             data_resp.data.forEach(function(valueObj, index) {
-                                 selectOptions += '<option value="' + valueObj.id +
-                                     '" >' +
-                                     valueObj.name + '</option>'
-                             });
-                             // bind final options to select
-                             closestTr.find('.select_sub_cat').html(selectOptions);
-                         },
-                         error: function(jqXHR, textStatus,
-                             errorThrown) { // On ajax error operation 
-                             closestTr.find('.select_sub_cat').html(selectOptions);
-                         }
-                     });
-                 }
-             });
+                // parent category on change bind sub category data by ajax
+                $(document).on('change', '.select_parent_cat', function() {
+                    var closestTr = $(this).closest('tr');
+                    var selectOptions =
+                        '<option selected="" readonly="" disabled="">Select Sub category-- </option>';
+                    if ($(this).val() != '') { // check value is not empty then send ajax request
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ url('/getsubcategories') }}',
+                            data: {
+                                category_id: $(this).val()
+                            },
+                            dataType: 'json',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                                '_method': 'post'
+                            },
+                            beforeSend: function() { // Before ajax send operation
+                                closestTr.find('.select_sub_cat').html(selectOptions);
+                            },
+                            success: function(data_resp, textStatus,
+                                jqXHR) { // On ajax success operation
+                                data_resp.data.forEach(function(valueObj, index) {
+                                    selectOptions += '<option value="' + valueObj.id +
+                                        '" >' +
+                                        valueObj.name + '</option>'
+                                });
+                                // bind final options to select
+                                closestTr.find('.select_sub_cat').html(selectOptions);
+                            },
+                            error: function(jqXHR, textStatus,
+                                errorThrown) { // On ajax error operation 
+                                closestTr.find('.select_sub_cat').html(selectOptions);
+                            }
+                        });
+                    }
+                });
             });
         </script>
-    @endpush     
+    @endpush
     {{-- KEY : DYNAMICMULTIROW Ends --}}
 </x-app-layout>

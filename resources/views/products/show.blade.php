@@ -40,18 +40,26 @@
                 </div>
 
                 <div class="mb-4">
-                    @php
-                        if ($product->category->isNotEmpty()) {
-                            foreach ($product->category as $keyParentCat => $valParentCat) {
-                                echo '<span><b>Parent Category :: </b></span>' . $valParentCat->name . '<br>';
-                                if ($valParentCat->subcategories->isNotEmpty()) {
-                                    foreach ($valParentCat->subcategories as $keySubCat => $valSubCat) {
-                                        echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span><b>Sub Category :: </b></span><i>' . $valSubCat->name . '</i><br>';
-                                    } // Loops Ends
-                                }
-                            }
-                        }
-                    @endphp
+                    @if ($product->category->isNotEmpty())
+                        @php $isParentCatExist = []; @endphp
+                        @foreach ($product->category as $parentCat)
+                            @if(!in_array($parentCat->name,$isParentCatExist))
+                            <span><b>Parent Category :: </b></span>
+                            {{ $parentCat->name }} <br>
+                            @endif
+                            @php
+                                $isParentCatExist[] = $parentCat->name;
+                            @endphp
+                            @if ($parentCat->subcategories->isNotEmpty())
+                                @foreach ($parentCat->subcategories as $subCat)
+                                    @if ($parentCat->pivot->category_id == $parentCat->id && $parentCat->pivot->sub_category_id == $subCat->id)
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <span><b>Sub Category :: </b></span><i> {{ $subCat->name }} </i> <br>
+                                    @endif
+                                @endforeach <!-- Sub Category Loop Ends -->
+                            @endif
+                        @endforeach <!-- Parent Category Loop Ends -->
+                    @endif
                 </div>
 
                 <div class="mb-4">
