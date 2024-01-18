@@ -51,20 +51,13 @@ class OrderController extends Controller
     {
         try {
             $createdOrder = Order::firstOrCreate(['order_code' => $request->order_code, 'user_id' => auth()->user()->id]);
-
-            // Create an array of data for bulk insertion
-            $data = [];
-            foreach ($request->products as $productId) {
-                $data[] = [
-                    'order_id' => $createdOrder->id,
-                    'product_id' => $productId,
-                ];
-            }
-            OrderProductPivot::insert($data);
+            // attach relational products data to order_product table
+            $createdOrder->products()->attach($request->products);
+            
             if ($createdOrder) { // inserted success
                 $createdOrder->total_amount = Product::whereIn('id', $request->products)->sum('price');
                 $createdOrder->save();
-                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : ".json_encode([request()->all(),$data]));
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : ".json_encode([request()->all(),$createdOrder]));
                 return redirect()->route('orders.index')
                     ->withSuccess('Created successfully...!');
             }
@@ -92,14 +85,13 @@ class OrderController extends Controller
     {
         $selectedProducts = [];
         $orderId = $order->id;
-        $order->with('products')->where('user_id', auth()->user()->id);
+        $order->with(['products','products.category.subcategories'])->where('user_id', auth()->user()->id);
         if ($order->has('products')) {
             $order->products->each(function ($prod, $key) use (&$selectedProducts) {
                 $selectedProducts[] = $prod->id;
             });
-        }
-        $products = Product::with(['getParentCatHasOne'])->where('status', Product::STATUS_ACTIVE)->get();
-        return view('orders.show', compact('order', 'products', 'selectedProducts'));
+        }      
+        return view('orders.show', compact('order'));
     }
 
     /**
@@ -124,20 +116,10 @@ class OrderController extends Controller
     public function update(OrderUpdateRequest $request, Order $order)
     {
         try {
-            // Delete old order and product record 
-            OrderProductPivot::where('order_id', $order->id)->delete();
-            // Create an array of data for bulk insertion
-            $data = [];
-            foreach ($request->products as $productId) {
-                $data[] = [
-                    'order_id' => $order->id,
-                    'product_id' => $productId,
-                ];
-            }
-            OrderProductPivot::insert($data);
             // update order details
             $order->updateOrFail(['order_code' => $request->order_code, 'total_amount' => Product::whereIn('id', $request->products)->sum('price'), 'user_id' => auth()->user()->id]);
-
+            // sync relational products data to order_product table
+            $order->products()->sync($request->products);
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success updating data : ".json_encode([request()->all(),$order]));
             return redirect()->route('orders.index')
                 ->withSuccess('Updated Successfully...!');            
@@ -163,8 +145,9 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         try {
-            OrderProductPivot::where('order_id', $order->id)->delete(); // related order and product pivot data remove
             $order->delete(); // main order table record remove
+            // delete existed assigned product's category
+            $order->products()->detach();
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success deleting data : " . json_encode([request()->all(), $order]));
             return redirect()->route('orders.index')
                 ->withSuccess('Deleted Successfully.');                

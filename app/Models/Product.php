@@ -24,7 +24,7 @@ class Product extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'description', 'parent_category_id', 'sub_category_id', 'image', 'price', 'qty', 'status', 'user_id'];
+    protected $fillable = ['name', 'description', 'price', 'qty', 'status', 'user_id'];
 
     /**
      * The attributes that aren't mass assignable.
