@@ -44,6 +44,10 @@
                         <label for="total_amount" class="block mb-2 text-sm font-bold text-gray-700 inline-flex">Total Amount :</label>
                         <span>{{ $order->total_amount }}</span>
                     </div>
+                    <div class="mb-4">
+                        <label for="CreatedBy" class="block mb-2 text-sm font-bold text-gray-700 inline-flex">CreatedBy :</label>
+                        <span>{{ $order->user->name ?? null }}</span>
+                    </div>
             </div>
         </div>
     </div>

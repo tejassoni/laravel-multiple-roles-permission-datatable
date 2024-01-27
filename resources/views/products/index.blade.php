@@ -55,6 +55,11 @@
                     </div>
                 @endif
                 <!-- Calls when session error triggers ends -->
+
+                <!-- Dynamic Notification Alert Ajax Starts -->
+                <div id="notification-alert"></div>
+                <!-- Dynamic Notification Alert Ajax Ends -->
+
                 <!-- KEY : DATATABLE Table ID and Class -->
                 <table id="tbl" class="w-full table-fixed display cell-border row-border stripe">
                     <thead>
@@ -64,6 +69,7 @@
                             <th class="px-4 py-2 border">Image</th>
                             <th class="px-4 py-2 border">Price</th>
                             <th class="px-4 py-2 border">Quantity</th>
+                            <th class="px-4 py-2 border">Status</th>
                             <th class="px-4 py-2 border">Action</th>
                         </tr>
                     </thead>
@@ -84,9 +90,9 @@
                                             @endphp
                                             @if ($parentCat->subcategories->isNotEmpty())
                                                 @foreach ($parentCat->subcategories as $subCat)
-                                                    @if ($parentCat->pivot->category_id == $parentCat->id && $parentCat->pivot->sub_category_id == $subCat->id)
+                                                    @if ($parentCat->pivot->category_id == $parentCat->id && $parentCat->pivot->sub_category_id == $product->id)
                                                         &nbsp;&nbsp;&nbsp;&nbsp;
-                                                        <span><b>Sub Category :: </b></span><i> {{ $subCat->name }} </i>
+                                                        <span><b>Sub Category :: </b></span><i> {{ $product->name }} </i>
                                                         <br>
                                                     @endif
                                                 @endforeach <!-- Sub Category Loop Ends -->
@@ -106,6 +112,17 @@
                                 </td>
                                 <td class="px-4 py-2 border">{{ $product->price }}</td>
                                 <td class="px-4 py-2 border">{{ $product->qty }}</td>
+                                <td class="px-4 py-2 border">
+                                    <input type="radio" name="status_{{ $product->id }}"
+                                        data-id="{{ $product->id }}"
+                                        value="{{ App\Models\Product::STATUS_ACTIVE }}"
+                                        @if ($product->status) checked @endif class="status" /> Active
+                                    </br>
+                                    <input class="status" type="radio" name="status_{{ $product->id }}"
+                                        data-id="{{ $product->id }}"
+                                        value="{{ App\Models\Product::STATUS_INACTIVE }}"
+                                        @if (!$product->status) checked @endif /> In-Active
+                                </td>
                                 <td class="px-4 py-2 border">
                                     <form action="{{ route('products.destroy', $product->id) }}" method="POST">
                                         <!-- KEY : MULTIPERMISSION starts -->
@@ -147,6 +164,49 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $('#tbl').DataTable();
+
+                $(document).on('change', '.status', function() {
+                    $.ajax({
+                        type: 'POST', // Default GET
+                        url: "{{ url('product-status') }}",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            product_id: $(this).data('id'),
+                            status: $(this).val()
+                        },
+                        dataType: 'json', // text , XML, HTML
+                        beforeSend: function() { // Before ajax send operation 
+                            $("#notification-alert").html("");
+                        },
+                        success: function(data_resp, textStatus, jqXHR) { // On ajax success operation
+                            if (data_resp.status) {
+                                $("#notification-alert").html(
+                                    "<div class='alert alert-success bg-green-100 border-t-4 border-green-500 rounded-b text-green-600 px-4 py-3 shadow-md my-3' role='alert'><div class='flex'> <div><p class='text-sm text-success'>" +
+                                    data_resp.message + "</p></div></div></div>");
+                            } else {
+                                $("#notification-alert").html(
+                                    "<div class='alert alert-danger rounded-b text-red-600 px-4 py-3 shadow-md my-3' role='alert'><div class='flex'> <div><p class='text-sm text-danger'>" +
+                                    data_resp.message + "</p></div></div></div>");
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) { // On ajax error operation
+                            $("#notification-alert").html(
+                                "<div class='alert alert-danger rounded-b text-red-600 px-4 py-3 shadow-md my-3' role='alert'><div class='flex'> <div><p class='text-sm text-danger'>" +
+                                jqXHR.responseJSON.message + "</p></div></div></div>");
+                        },
+                        complete: function() { // On ajax complete operation  
+                            $('html, body').animate({
+                                scrollTop: 0
+                            }, 'slow');
+                            $('#notification-alert').fadeOut(5000, function() {
+                                $(this).html('').show();
+                            });
+
+                        }
+                    });
+                });
             });
         </script>
     @endpush

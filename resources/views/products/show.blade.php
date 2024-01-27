@@ -73,6 +73,10 @@
                         class="block mb-2 text-sm font-bold text-gray-700 inline-flex font-semibold">Quantity : </label>
                     <span>{{ $product->qty }}</span>
                 </div>
+                <div class="mb-4">
+                    <label for="status"
+                        class="block mb-2 text-sm font-bold text-gray-700"><b>{{ __('Status') }} : </b><span>{{ ($product->status)?'Active':'In-Active' }}</span> </label>
+                 </div>
             </div>
         </div>
     </div>

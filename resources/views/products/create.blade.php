@@ -157,10 +157,10 @@
                             class="block mb-2 text-sm font-bold text-gray-700">{{ __('Status') }}</label>
                             <input type="radio" name="status" 
                             value="{{ App\Models\Product::STATUS_ACTIVE }}"
-                            @if (old('status') == 1) checked @endif class="status" /> Active 
+                            @if (old('status') == App\Models\Product::STATUS_ACTIVE) checked @endif class="status" /> Active 
                         <input class="status" type="radio" name="status" 
                             value="{{ App\Models\Product::STATUS_INACTIVE }}"
-                            @if (old('status') == 0) checked @endif /> In-Active
+                            @if (old('status') == App\Models\Product::STATUS_INACTIVE) checked @endif /> In-Active
                     </div>
 
                     <div>

@@ -63,6 +63,7 @@
                             <th class="px-4 py-2 border">Order Code</th>
                             <th class="px-4 py-2 border">Products</th>
                             <th class="px-4 py-2 border">Total Amount</th>
+                            <th class="px-4 py-2 border">CreatedBy</th>
                             <th class="px-4 py-2 border">Action</th>
                         </tr>
                     </thead>
@@ -78,6 +79,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-2 border">{{ $order->total_amount }}</td>
+                                <td class="px-4 py-2 border">{{ $order->user->name ?? null }}</td>
                                 <td class="px-4 py-2 border">
                                     <form action="{{ route('orders.destroy', $order->id) }}" method="POST">
                                         <!-- KEY : MULTIPERMISSION starts -->

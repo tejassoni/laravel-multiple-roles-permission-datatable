@@ -31,7 +31,7 @@ class OrderController extends Controller
     public function index()
     {
         $products = Product::orderBy('updated_at', 'desc')->get();
-        $orders = Order::where('user_id', auth()->user()->id)->orderBy('updated_at', 'desc')->get();
+        $orders = Order::with('user')->where('user_id', auth()->user()->id)->orderBy('updated_at', 'desc')->get();
         return view('orders.index', compact('products', 'orders'));
     }
 
@@ -85,7 +85,7 @@ class OrderController extends Controller
     {
         $selectedProducts = [];
         $orderId = $order->id;
-        $order->with(['products','products.category.subcategories'])->where('user_id', auth()->user()->id);
+        $order->with(['products','products.category.subcategories','user'])->where('user_id', auth()->user()->id);
         if ($order->has('products')) {
             $order->products->each(function ($prod, $key) use (&$selectedProducts) {
                 $selectedProducts[] = $prod->id;

@@ -312,7 +312,7 @@ class ProductController extends Controller
     public function changeStatus(ProductStatusUpdateRequest $request)
     {
         try {
-            $product = Product::findOrFail($request->subcategory_id);
+            $product = Product::findOrFail($request->product_id);
             $product->update(['status' => $request->status]);
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success status updating data : " . json_encode([request()->all(), $product]));
             return response()->json([
