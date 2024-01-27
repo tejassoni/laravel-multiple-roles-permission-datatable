@@ -57,6 +57,15 @@
                         <textarea class="form-control" cols="40" rows="7" name="description"
                             placeholder="{{ __('Enter Category description') }}">{{ old('description', $category->description) }}</textarea>
                     </div>
+                    <div class="mb-4">
+                        <label for="status"
+                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Status') }}</label>
+                            <input type="radio" name="status" value="{{ App\Models\Category::STATUS_ACTIVE }}"
+                            @if (!is_null(old('status')) && old('status') == App\Models\Category::STATUS_ACTIVE) checked @elseif($category->status && !old('status')) checked @endif class="status" /> Active
+                     <input class="status" type="radio" name="status" value="{{ App\Models\Category::STATUS_INACTIVE }}"
+                            @if (!is_null(old('status')) && old('status') == App\Models\Category::STATUS_INACTIVE) checked @elseif(!$category->status && !old('status')) checked @endif /> In-Active
+                 
+                    </div>
                     <div>
                         <button title="update" type="submit"
                             class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">

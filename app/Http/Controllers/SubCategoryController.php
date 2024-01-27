@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\SubCategory;
 use App\Http\Requests\SubCategoryStoreRequest;
 use App\Http\Requests\SubCategoryUpdateRequest;
+use App\Http\Requests\SubCategoryStatusUpdateRequest;
 
 class SubCategoryController extends Controller
 {
@@ -33,9 +34,7 @@ class SubCategoryController extends Controller
         $subcategories = SubCategory::with(['getCatUserHasOne', 'parentcategories:name'])
             ->where('user_id', auth()->user()->id)
             ->orderBy('updated_at', 'desc')
-            ->where('status', SubCategory::STATUS_ACTIVE)
             ->get();
-            // dd('Test 1 :: Starts', $subcategories);
         return view('subcategory.index', compact('subcategories'));
     }
 
@@ -55,7 +54,7 @@ class SubCategoryController extends Controller
     public function store(SubCategoryStoreRequest $request)
     {
         try {
-            $created = SubCategory::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'user_id' => auth()->user()->id]);
+            $created = SubCategory::firstOrCreate(['name' => $request->name, 'description' => $request->description,'status' => $request->status, 'user_id' => auth()->user()->id]);
             $created->parentcategories()->attach($request->select_parent_cat);
             if ($created) { // inserted success
                 \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all(),$created]));
@@ -104,7 +103,7 @@ class SubCategoryController extends Controller
     public function update(SubCategoryUpdateRequest $request, SubCategory $subcategory)
     {
         try {
-            $subcategory->updateOrFail(['name' => $request->name, 'description' => $request->description, 'user_id' => auth()->user()->id]);
+            $subcategory->updateOrFail(['name' => $request->name, 'description' => $request->description,'status' => $request->status, 'user_id' => auth()->user()->id]);
             $subcategory->parentcategories()->sync($request->select_parent_cat);
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success updating data : " . json_encode([request()->all(), $subcategory]));
             return redirect()->route('subcategory.index')
@@ -150,6 +149,38 @@ class SubCategoryController extends Controller
                 ->back()
                 ->withInput()
                 ->with('error', "error occurs failed to proceed...! " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update the status.
+     */
+    public function changeStatus(SubCategoryStatusUpdateRequest $request)
+    {
+        try {
+            $subcategory = SubCategory::findOrFail($request->subcategory_id);
+            $subcategory->update(['status' => $request->status]);
+            \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success status updating data : " . json_encode([request()->all(), $subcategory]));
+            return response()->json([
+                'status' => true,
+                'data' => $subcategory,
+                'message' => 'Success status updating data..!'
+            ]);            
+        } catch (\Illuminate\Database\QueryException $e) { // Handle query exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error Query updating data : " . $e->getMessage());
+            // You can also return a response to the user            
+                return response()->json([
+                    'status' => false,
+                    'data' => [],
+                    'message' => "error occurs failed to proceed...! " . $e->getMessage()
+                ]); 
+        } catch (\Exception $e) { // Handle any runtime exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error updating data : " . $e->getMessage() . '');
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => "error occurs failed to proceed...! " . $e->getMessage()
+            ]); 
         }
     }
 }

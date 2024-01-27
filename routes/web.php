@@ -34,7 +34,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', App\Http\Controllers\RoleController::class);
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::resource('category', App\Http\Controllers\ParentCategoryController::class);
+    Route::post('category-status',[App\Http\Controllers\ParentCategoryController::class,'changeStatus']);
     Route::resource('subcategory', App\Http\Controllers\SubCategoryController::class);
+    Route::post('subcategory-status',[App\Http\Controllers\SubCategoryController::class,'changeStatus']);
     Route::resource('products', App\Http\Controllers\ProductController::class);
     Route::resource('orders', App\Http\Controllers\OrderController::class);
     // Ajax Web

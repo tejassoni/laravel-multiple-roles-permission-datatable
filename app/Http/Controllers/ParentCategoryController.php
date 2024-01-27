@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use GuzzleHttp\Psr7\Request;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
-use GuzzleHttp\Psr7\Request;
+use App\Http\Requests\CategoryStatusUpdateRequest;
 
 class ParentCategoryController extends Controller
 {
@@ -29,7 +30,7 @@ class ParentCategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::where('status', Category::STATUS_ACTIVE)->orderBy('updated_at', 'desc')->get();
+        $categories = Category::orderBy('updated_at', 'desc')->get();
         return view('category.index', compact('categories'));
     }
 
@@ -47,10 +48,10 @@ class ParentCategoryController extends Controller
     public function store(CategoryStoreRequest $request)
     {
         try {
-            $created = Category::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'user_id' => auth()->user()->id]);
+            $created = Category::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'status' => $request->status,'user_id' => auth()->user()->id]);
 
             if ($created) { // inserted success
-                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all(),$created]));
+                \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success inserting data : " . json_encode([request()->all(), $created]));
                 return redirect()->route('category.index')
                     ->withSuccess('created successfully...!');
             }
@@ -93,7 +94,7 @@ class ParentCategoryController extends Controller
     public function update(CategoryUpdateRequest $request, Category $category)
     {
         try {
-            $category->updateOrFail(['name' => $request->name, 'description' => $request->description, 'user_id' => auth()->user()->id]);
+            $category->updateOrFail(['name' => $request->name, 'description' => $request->description,'status' => $request->status, 'user_id' => auth()->user()->id]);
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success updating data : " . json_encode([request()->all(), $category]));
             return redirect()->route('category.index')
                 ->withSuccess('Updated Successfully...!');
@@ -136,6 +137,38 @@ class ParentCategoryController extends Controller
                 ->back()
                 ->withInput()
                 ->with('error', "error occurs failed to proceed...! " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update the status.
+     */
+    public function changeStatus(CategoryStatusUpdateRequest $request)
+    {
+        try {
+            $category = Category::findOrFail($request->category_id);
+            $category->update(['status' => $request->status]);
+            \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success status updating data : " . json_encode([request()->all(), $category]));
+            return response()->json([
+                'status' => true,
+                'data' => $category,
+                'message' => 'Success status updating data..!'
+            ]);            
+        } catch (\Illuminate\Database\QueryException $e) { // Handle query exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error Query updating data : " . $e->getMessage());
+            // You can also return a response to the user            
+                return response()->json([
+                    'status' => false,
+                    'data' => [],
+                    'message' => "error occurs failed to proceed...! " . $e->getMessage()
+                ]); 
+        } catch (\Exception $e) { // Handle any runtime exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error updating data : " . $e->getMessage() . '');
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => "error occurs failed to proceed...! " . $e->getMessage()
+            ]); 
         }
     }
 }

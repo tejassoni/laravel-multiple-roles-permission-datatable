@@ -24,8 +24,11 @@
                 <div class="mb-4">
                     <label for="parent-category"
                         class="block mb-2 text-sm font-bold text-gray-700"><b>{{ __('Parent category') }} : </b><span>{{ implode(', ', $parentCategoryNames) ?? 'None' }}</span> </label>
-                        
                 </div>
+                <div class="mb-4">
+                    <label for="status"
+                        class="block mb-2 text-sm font-bold text-gray-700"><b>{{ __('Status') }} : </b><span>{{ ($subcategory->status)?'Active':'In-Active' }}</span> </label>
+                 </div>
             </div>
         </div>
     </div>

@@ -79,6 +79,15 @@
                             </span>
                         @enderror
                     </div>
+                    <div class="mb-4">
+                        <label for="status"
+                            class="block mb-2 text-sm font-bold text-gray-700">{{ __('Status') }}</label>
+                            <input type="radio" name="status" value="{{ App\Models\SubCategory::STATUS_ACTIVE }}"
+                            @if (!is_null(old('status')) && old('status') == App\Models\SubCategory::STATUS_ACTIVE) checked @elseif($subcategory->status && !old('status')) checked @endif class="status" /> Active
+                     <input class="status" type="radio" name="status" value="{{ App\Models\SubCategory::STATUS_INACTIVE }}"
+                            @if (!is_null(old('status')) && old('status') == App\Models\SubCategory::STATUS_INACTIVE) checked @elseif(!$subcategory->status && !old('status')) checked @endif /> In-Active
+                 
+                    </div>
                     <div>
                         <button title="update" type="submit"
                             class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">

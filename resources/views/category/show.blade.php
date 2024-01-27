@@ -21,6 +21,10 @@
                       class="block mb-2 text-sm font-bold text-gray-700"><b>{{ __('Category Description') }} : </b><span>{{ $category->description }}</span> </label>
                       
               </div>
+              <div class="mb-4">
+                <label for="status"
+                    class="block mb-2 text-sm font-bold text-gray-700"><b>{{ __('Status') }} : </b><span>{{ ($category->status)?'Active':'In-Active' }}</span> </label>
+             </div>
           </div>
       </div>
   </div>

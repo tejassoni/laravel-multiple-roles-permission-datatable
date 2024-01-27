@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use App\Http\Requests\ProductStatusUpdateRequest;
 
 class ProductController extends Controller
 {
@@ -57,7 +58,7 @@ class ProductController extends Controller
     {
         try {
             // inserted main product details data at product table
-            $created = Product::firstOrCreate(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
+            $created = Product::firstOrCreate(['name' => $request->name, 'description' => $request->description,'status' => $request->status,'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
             // multiple images upload
             if ($request->hasFile('images')) { // Images founds               
                 $filehandle = $this->_multipleFileUploads($request, 'images', 'public/products');
@@ -150,7 +151,7 @@ class ProductController extends Controller
                 $product->category()->attach($valParentCat,['sub_category_id' =>$request->select_sub_cat[$keyParentCat]]);
              } 
              // final update of product master table
-             $product->update(['name' => $request->name, 'description' => $request->description, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
+             $product->update(['name' => $request->name, 'description' => $request->description,'status' => $request->status, 'price' => $request->price, 'qty' => $request->qty, 'user_id' => auth()->user()->id]);
 
             \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success updating data : " . json_encode([request()->all(), $product]));
 
@@ -302,6 +303,38 @@ class ProductController extends Controller
                 'data' => [],
                 'message' => 'Error Triggers..! ' . $e->getMessage()
             ], (!empty($e->getCode())) ? $e->getCode() : 401);
+        }
+    }
+
+    /**
+     * Update the status.
+     */
+    public function changeStatus(ProductStatusUpdateRequest $request)
+    {
+        try {
+            $product = Product::findOrFail($request->subcategory_id);
+            $product->update(['status' => $request->status]);
+            \Log::info(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Success status updating data : " . json_encode([request()->all(), $product]));
+            return response()->json([
+                'status' => true,
+                'data' => $product,
+                'message' => 'Success status updating data..!'
+            ]);            
+        } catch (\Illuminate\Database\QueryException $e) { // Handle query exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error Query updating data : " . $e->getMessage());
+            // You can also return a response to the user            
+                return response()->json([
+                    'status' => false,
+                    'data' => [],
+                    'message' => "error occurs failed to proceed...! " . $e->getMessage()
+                ]); 
+        } catch (\Exception $e) { // Handle any runtime exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error updating data : " . $e->getMessage() . '');
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => "error occurs failed to proceed...! " . $e->getMessage()
+            ]); 
         }
     }
 }
