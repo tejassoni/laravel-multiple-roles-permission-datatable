@@ -41,6 +41,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('subcategory-status',[App\Http\Controllers\SubCategoryController::class,'changeStatus']);
     Route::resource('subcategory', App\Http\Controllers\SubCategoryController::class);
     // Products routes filter should define above resource controller to avoid routes conflicts
+    Route::get('product/search',[App\Http\Controllers\ProductController::class,'filterCategory'])->name('products.search');
     Route::post('product-status',[App\Http\Controllers\ProductController::class,'changeStatus']);
     Route::post('getsubcategories', [App\Http\Controllers\ProductController::class,'getSubCategoryByParentCatId']);
     Route::resource('products', App\Http\Controllers\ProductController::class);

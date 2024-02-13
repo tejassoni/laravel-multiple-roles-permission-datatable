@@ -39,13 +39,12 @@
                             <div class="flex-initial w-64 pl-3">
                                 <div class="mb-4">
                                     <label for="status"
-                                        class="block mb-2 text-sm font-bold text-gray-700">{{ __('Status') }}</label>
-                                    <input type="radio" name="status"
-                                        value="{{ App\Models\Category::STATUS_ACTIVE }}"
-                                         @if (request()->has('status') && request()->status) == App\Models\Category::STATUS_ACTIVE) checked @endif /> Active
-                                    <input type="radio" name="status"
-                                        value="{{ App\Models\Category::STATUS_INACTIVE }}"
-                                        @if (request()->has('status') && request()->status == App\Models\Category::STATUS_INACTIVE) checked @endif /> In-Active
+                                        class="block mb-2 text-sm font-bold text-gray-700">{{ __('Select Status') }}</label>
+                                    <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option disabled readonly selected>Select Status</option>
+                                            <option value="{{ App\Models\SubCategory::STATUS_ACTIVE }}" @if(request()->has('status') && request()->status == App\Models\SubCategory::STATUS_ACTIVE) selected @endif>Active</option>
+                                            <option value="{{ App\Models\SubCategory::STATUS_INACTIVE }}" @if(request()->has('status') && request()->status == App\Models\SubCategory::STATUS_INACTIVE) selected @endif>In-Active</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="flex-initial w-64 pl-3">

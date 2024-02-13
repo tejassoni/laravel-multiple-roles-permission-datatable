@@ -337,4 +337,31 @@ class ProductController extends Controller
             ]); 
         }
     }
+
+    /**
+     * Search filter records on basis of inputs.
+     */
+    public function filterCategory(Request $request)
+    {        
+        try {
+            $query = Product::query(); // using relationships 
+            // Search Filters
+            $query->when($request->filled('name'), function ($query) use ($request) {
+                return $query->where('name','like','%'.$request->name.'%');            
+            })->when($request->filled('status'), function ($query) use ($request) {
+                return $query->where('status', $request->status);
+            })->when($request->filled('from_date') && $request->filled('to_date'), function ($query) use ($request) {                        
+                return $query->whereDate("created_at", '>=', $request->from_date)
+                ->whereDate("created_at", '<=', $request->to_date);
+            });           
+            $products = $query->get();
+            return view('products.index', compact('products'));
+        } catch (\Exception $e) { // Handle any runtime exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error updating data : " . $e->getMessage() . '');
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', "error occurs failed to proceed...! " . $e->getMessage());
+        }
+    }
 }

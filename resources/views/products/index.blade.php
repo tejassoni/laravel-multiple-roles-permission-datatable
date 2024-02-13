@@ -9,6 +9,66 @@
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
     @endpush
     <!-- KEY : DATATABLE Starts Styles -->
+
+    <!-- Filter Search Starts -->
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <form action="{{ route('products.search') }}" method="GET">
+                        @csrf
+                        <div class="flex space-x-4">
+                            <div class="flex-none w-14 h-14">
+                                <div class="mb-4">
+                                    <input type="text" name="name" class="form-control"
+                                        placeholder="Enter Product name" maxlength="100" value="{{ request()->name }}">
+                                </div>
+                            </div>
+                            <div class="flex-initial w-64 pl-3">
+                                <div class="mb-4">
+                                    <label for="status"
+                                        class="block mb-2 text-sm font-bold text-gray-700">{{ __('Select Status') }}</label>
+                                    <select name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option disabled readonly selected>Select Status</option>
+                                            <option value="{{ App\Models\Product::STATUS_ACTIVE }}" @if(request()->has('status') && request()->status == App\Models\Product::STATUS_ACTIVE) selected @endif>Active</option>
+                                            <option value="{{ App\Models\Product::STATUS_INACTIVE }}" @if(request()->has('status') && request()->status == App\Models\Product::STATUS_INACTIVE) selected @endif>In-Active</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="flex-initial w-64 pl-3">
+                                <div class="mb-4">
+                                    <label for="status"
+                                        class="block mb-2 text-sm font-bold text-gray-700">{{ __('Created From') }}</label>
+                                    <input type="date" name="from_date" value="">
+                                </div>                                
+                            </div>
+                            <div class="flex-initial w-64 pl-3">
+                                <div class="mb-4">
+                                    <label for="status"
+                                        class="block mb-2 text-sm font-bold text-gray-700">{{ __('Created To') }}</label>
+                                    <input type="date" name="to_date" value="">
+                                </div>                                
+                            </div>
+                            <div class="flex-initial w-64 pl-3">
+                                <button title="search" type="submit"
+                                    class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">
+                                    Search
+                                </button>
+
+                                <a title="reset" href="{{ url('products') }}"
+                                    class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">
+                                    Reset
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Filter Search Ends -->
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 py-4">
