@@ -8,7 +8,66 @@
     @push('header-styles')
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
     @endpush
-    <!-- KEY : DATATABLE Starts Styles -->
+    <!-- KEY : DATATABLE Starts Styles Ends -->
+
+    <!-- Filter Search Starts -->
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <form action="{{ route('subcategory.search') }}" method="GET">
+                        @csrf
+                        <div class="flex space-x-4">
+                            <div class="flex-none w-14 h-14">
+                                <div class="mb-4">
+                                    <input type="text" name="parentcategoryname" class="form-control"
+                                        placeholder="Enter Parent Category name" maxlength="100" value="{{ request()->parentcategoryname }}">
+                                </div>
+                            </div>
+                            <div class="flex-none w-14 h-14 pl-3">
+                                <div class="mb-4">
+                                    <input type="text" name="subcategoryname" class="form-control"
+                                        placeholder="Enter Sub Category name" maxlength="100" value="{{ request()->subcategoryname }}">
+                                </div>
+                            </div>
+                            <div class="flex-none w-14 h-14 pl-3">
+                                <div class="mb-4">
+                                    <input type="text" name="createdby" class="form-control"
+                                        placeholder="Enter Created By" maxlength="100" value="{{ request()->createdby }}">
+                                </div>
+                            </div>
+                            <div class="flex-initial w-64 pl-3">
+                                <div class="mb-4">
+                                    <label for="status"
+                                        class="block mb-2 text-sm font-bold text-gray-700">{{ __('Status') }}</label>
+                                    <input type="radio" name="status"
+                                        value="{{ App\Models\Category::STATUS_ACTIVE }}"
+                                         @if (request()->has('status') && request()->status) == App\Models\Category::STATUS_ACTIVE) checked @endif /> Active
+                                    <input type="radio" name="status"
+                                        value="{{ App\Models\Category::STATUS_INACTIVE }}"
+                                        @if (request()->has('status') && request()->status == App\Models\Category::STATUS_INACTIVE) checked @endif /> In-Active
+                                </div>
+                            </div>
+                            <div class="flex-initial w-64 pl-3">
+                                <button title="search" type="submit"
+                                    class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">
+                                    Search
+                                </button>
+
+                                <a title="reset" href="{{ url('subcategory') }}"
+                                    class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">
+                                    Reset
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Filter Search Ends -->
+
+    <!-- Tables Lists Starts -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -127,7 +186,9 @@
             </div>
         </div>
     </div>
-    {{-- KEY : DATATABLE Starts --}}
+    <!-- Tables Lists Ends -->
+
+    {{-- KEY : DATATABLE Scripts Starts --}}
     @push('footer-scripts')
         <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
         <script type='text/javascript' src="{{ asset('js/datatables.min.js') }}"></script>
@@ -180,5 +241,5 @@
             });
         </script>
     @endpush
-    {{-- KEY : DATATABLE Ends --}}
+    {{-- KEY : DATATABLE Scripts Ends --}}
 </x-app-layout>

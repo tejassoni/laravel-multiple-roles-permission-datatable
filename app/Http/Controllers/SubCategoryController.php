@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\SubCategory;
+use Illuminate\Http\Request;
 use App\Http\Requests\SubCategoryStoreRequest;
 use App\Http\Requests\SubCategoryUpdateRequest;
 use App\Http\Requests\SubCategoryStatusUpdateRequest;
@@ -183,4 +184,37 @@ class SubCategoryController extends Controller
             ]); 
         }
     }
+
+    /**
+     * Search filter records on basis of inputs.
+     */
+    public function filterCategory(Request $request)
+    {        
+        try {
+            $query = SubCategory::query()->with(['getCatUserHasOne', 'parentcategories:name']); // using relationships 
+            // Search Filters
+            $query->when($request->filled('subcategoryname'), function ($query) use ($request) {
+                return $query->where('name','like','%'.$request->subcategoryname.'%');
+            })->when($request->filled('parentcategoryname'), function ($query) use ($request) { // relationship filters        
+                return $query->whereHas('parentcategories', function ($subquery) use ($request) { // relationship filters 
+                   return $subquery->where('name', 'like','%'.$request->parentcategoryname.'%');                    
+                });
+            })->when($request->filled('createdby'), function ($query) use ($request) { // relationship filters        
+                return $query->whereHas('getCatUserHasOne', function ($subquery) use ($request) { // relationship filters 
+                   return $subquery->where('name', 'like','%'.$request->createdby.'%');                    
+                });
+            })->when($request->filled('status'), function ($query) use ($request) {
+                return $query->where('status', $request->status);
+            });           
+            $subcategories = $query->get();
+            return view('subcategory.index', compact('subcategories'));
+        } catch (\Exception $e) { // Handle any runtime exception
+            \Log::error(" file '" . __CLASS__ . "' , function '" . __FUNCTION__ . "' , Message : Error updating data : " . $e->getMessage() . '');
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', "error occurs failed to proceed...! " . $e->getMessage());
+        }
+    }
+
 }

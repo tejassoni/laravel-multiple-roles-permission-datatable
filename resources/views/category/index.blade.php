@@ -8,7 +8,7 @@
     @push('header-styles')
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
     @endpush
-    <!-- KEY : DATATABLE Starts Styles -->
+    <!-- KEY : DATATABLE Ends Styles -->
 
     <!-- Filter Search Starts -->
     <div class="py-12">
@@ -42,7 +42,7 @@
                                     Search
                                 </button>
 
-                                <a title="reset" href="{{ url('/category') }}"
+                                <a title="reset" href="{{ url('category') }}"
                                     class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">
                                     Reset
                                 </a>
@@ -167,7 +167,7 @@
     </div>
     <!-- Tables Lists Ends -->
 
-    {{-- KEY : DATATABLE Starts --}}
+    {{-- KEY : DATATABLE Scripts Starts --}}
     @push('footer-scripts')
         <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
         <script type='text/javascript' src="{{ asset('js/datatables.min.js') }}"></script>
@@ -219,5 +219,5 @@
             });
         </script>
     @endpush
-    {{-- KEY : DATATABLE Ends --}}
+    {{-- KEY : DATATABLE Scripts Ends --}}
 </x-app-layout>

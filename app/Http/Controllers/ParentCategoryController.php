@@ -173,10 +173,10 @@ class ParentCategoryController extends Controller
     }
 
     /**
-     * Update the status.
+     * Search filter records on basis of inputs.
      */
     public function filterCategory(Request $request)
-    {
+    {        
         try {
             $query = Category::query();
             // Search Filters
