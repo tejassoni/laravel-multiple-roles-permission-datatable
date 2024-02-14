@@ -1,14 +1,17 @@
 <x-app-layout>
+    <!-- Header Section Starts -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Sub Category
         </h2>
     </x-slot>
-    <!-- KEY : DATATABLE Starts Styles -->
+    <!-- Header Section Ends -->
+
+    <!-- KEY : DATATABLE Styles Starts -->
     @push('header-styles')
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
     @endpush
-    <!-- KEY : DATATABLE Starts Styles Ends -->
+    <!-- KEY : DATATABLE Styles Ends -->
 
     <!-- Filter Search Starts -->
     <div class="py-12">

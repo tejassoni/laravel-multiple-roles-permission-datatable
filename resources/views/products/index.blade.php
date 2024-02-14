@@ -1,14 +1,16 @@
 <x-app-layout>
+    <!-- Header Section Starts -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Products') }}
         </h2>
     </x-slot>
+    <!-- Header Section Ends -->
     <!-- KEY : DATATABLE Starts Styles -->
     @push('header-styles')
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
     @endpush
-    <!-- KEY : DATATABLE Starts Styles -->
+    <!-- KEY : DATATABLE Ends Styles -->
 
     <!-- Filter Search Starts -->
     <div class="py-12">
@@ -40,14 +42,14 @@
                                 <div class="mb-4">
                                     <label for="status"
                                         class="block mb-2 text-sm font-bold text-gray-700">{{ __('Created From') }}</label>
-                                    <input type="date" name="from_date" value="">
+                                    <input type="date" class="from_date" name="from_date" value="{{ (request()->has('from_date') && request()->filled('from_date'))? request()->from_date:''  }}">
                                 </div>                                
                             </div>
                             <div class="flex-initial w-64 pl-3">
                                 <div class="mb-4">
                                     <label for="status"
                                         class="block mb-2 text-sm font-bold text-gray-700">{{ __('Created To') }}</label>
-                                    <input type="date" name="to_date" value="">
+                                    <input type="date" class="to_date" name="to_date" value="{{ (request()->has('to_date') && request()->filled('to_date'))? request()->to_date:''  }}">
                                 </div>                                
                             </div>
                             <div class="flex-initial w-64 pl-3">
@@ -69,6 +71,7 @@
     </div>
     <!-- Filter Search Ends -->
 
+    <!-- Tables Lists Starts -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 py-4">
@@ -217,14 +220,18 @@
             </div>
         </div>
     </div>
-    {{-- KEY : DATATABLE Starts --}}
+    <!-- Tables Lists Ends -->
+
+    {{-- KEY : DATATABLE Scripts Starts --}}
     @push('footer-scripts')
         <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
         <script type='text/javascript' src="{{ asset('js/datatables.min.js') }}"></script>
         <script type="text/javascript">
             $(document).ready(function() {
+                // datatable initilization
                 $('#tbl').DataTable();
 
+                // change status from list with ajax
                 $(document).on('change', '.status', function() {
                     $.ajax({
                         type: 'POST', // Default GET
@@ -267,8 +274,15 @@
                         }
                     });
                 });
+
+                // from date 
+                $(document).on('change', '.from_date', function() {
+                    $('.to_date').val($(this).val());
+                    $('.to_date').attr('min',$(this).val());
+                });
+
             });
         </script>
     @endpush
-    {{-- KEY : DATATABLE Ends --}}
+    {{-- KEY : DATATABLE Scripts Ends --}}
 </x-app-layout>

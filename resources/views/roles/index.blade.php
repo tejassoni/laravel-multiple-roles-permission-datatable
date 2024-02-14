@@ -1,15 +1,18 @@
 <x-app-layout>
+    <!-- Header Section Starts -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Roles') }}
         </h2>
     </x-slot>
+    <!-- Header Section Ends -->
     <!-- KEY : DATATABLE Starts Styles -->
     @push('header-styles')
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
     @endpush
     <!-- KEY : DATATABLE Starts Styles -->
 
+    <!-- Tables Lists Starts -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 py-4">
@@ -102,7 +105,9 @@
             </div>
         </div>
     </div>
-    {{-- KEY : DATATABLE Starts --}}
+    <!-- Tables Lists Ends -->
+
+    {{-- KEY : DATATABLE Scripts Starts --}}
     @push('footer-scripts')
         <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
         <script type='text/javascript' src="{{ asset('js/datatables.min.js') }}"></script>
@@ -112,5 +117,5 @@
             });
         </script>
     @endpush
-    {{-- KEY : DATATABLE Ends --}}
+    {{-- KEY : DATATABLE Scripts Ends --}}
 </x-app-layout>

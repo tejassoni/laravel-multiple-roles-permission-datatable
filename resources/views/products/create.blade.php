@@ -1,9 +1,13 @@
 <x-app-layout>
+    <!-- Header Section Starts -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Create - Product') }}
         </h2>
     </x-slot>
+    <!-- Header Section Ends -->
+
+    <!-- Form Div Section Starts -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 py-4">
@@ -35,6 +39,8 @@
                     </div>
                 @endif
                 <!-- Calls when session error triggers ends -->
+
+                <!-- Create Form Starts -->
                 <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-4">
@@ -170,10 +176,13 @@
                         </button>
                     </div>
                 </form>
+                <!-- Create Form Ends -->
             </div>
         </div>
     </div>
-    {{-- KEY : DYNAMICMULTIROW Starts --}}
+    <!-- Form Div Section Ends -->
+
+    {{-- KEY : DYNAMICMULTIROW Scripts Starts --}}
     @push('footer-scripts')
         <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
         <script type="text/javascript">
@@ -234,5 +243,5 @@
             });
         </script>
     @endpush
-    {{-- KEY : DYNAMICMULTIROW Ends --}}
+    {{-- KEY : DYNAMICMULTIROW Scripts Ends --}}
 </x-app-layout>

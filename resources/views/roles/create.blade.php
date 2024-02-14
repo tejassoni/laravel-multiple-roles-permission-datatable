@@ -1,9 +1,13 @@
 <x-app-layout>
+    <!-- Header Section Starts -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Create - Role') }}
         </h2>
     </x-slot>
+    <!-- Header Section Ends -->
+
+    <!-- Form Div Section Starts -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 py-4">
@@ -35,6 +39,7 @@
                     </div>
                 @endif
                 <!-- Calls when session error triggers ends -->
+                <!-- Create Form Starts -->
                 <form action="{{ route('roles.store') }}" method="POST">
                     @csrf
                     <div class="mb-4">
@@ -63,7 +68,9 @@
                         </button>
                     </div>
                 </form>
+                <!-- Create Form Ends -->
             </div>
         </div>
     </div>
+    <!-- Form Div Section Ends -->
 </x-app-layout>
