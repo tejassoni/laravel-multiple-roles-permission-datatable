@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Image;
 use App\Models\Category;
 use App\Models\ProductImagePivot;
 use Illuminate\Database\Eloquent\Model;
@@ -52,6 +51,7 @@ class Product extends Model
         return $this->hasMany(ProductImagePivot::class, 'product_id','id');
     }
 
+    // Product's related Parent category
     public function category()
     {
         return $this->belongsToMany(Category::class)->withPivot('sub_category_id');

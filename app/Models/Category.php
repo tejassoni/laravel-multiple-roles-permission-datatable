@@ -34,17 +34,13 @@ class Category extends Model
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
+    // parent category's related sub category
     public function subcategories()
     {
         return $this->belongsToMany(SubCategory::class);
     }
 
-    public function getAllSubCategories()
-    {
-        return $this->hasMany(SubCategory::class);
-    }
-
-    // Category model
+    // get category's related products
     public function products()
     {
         return $this->belongsToMany(Product::class)->withPivot('sub_category_id');

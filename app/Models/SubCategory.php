@@ -34,15 +34,6 @@ class SubCategory extends Model
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
-    
-    /**
-     * Sub category to Parent category relationship with hasOne
-     */
-    public function getParentCatHasMany()
-    {
-        return $this->hasMany(Category::class, 'id', 'category_id');
-    } 
-
 
      /**
      * Sub category to User relationship with hasOne
@@ -51,15 +42,8 @@ class SubCategory extends Model
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     } 
-    
-     /**
-     * Sub category to Parent category relationship with hasOne
-     */
-    public function getParentCatHasOne()
-    {
-        return $this->hasMany(Category::class, 'id', 'category_id');
-    }
 
+    // Sub category's related Parent category
     public function parentcategories(){
         return $this->belongsToMany(Category::class);
     }

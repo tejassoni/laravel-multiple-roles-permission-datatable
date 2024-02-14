@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
@@ -33,22 +31,7 @@ class Order extends Model
      */
     protected $guarded = ['created_at','updated_at'];
     
-    /**
-     * Sub category to Parent category relationship with hasOne
-     */
-    public function getOrdersProductsHasMany()
-    {
-        return $this->hasMany(OrderProductPivot::class, 'order_id', 'id');
-    }
-
-    /**
-     * Sub category to Parent category relationship with hasOne
-     */
-    public function getOrdersProductsHasManyThrough()
-    {
-        return $this->hasManyThrough(Product::class,OrderProductPivot::class,'order_id','id','product_id','product_id');       
-    }
-
+    // Order's related products
     public function products()
     {
       return $this->belongsToMany( Product::class,OrderProductPivot::class, 'order_id', 'product_id');
@@ -62,6 +45,4 @@ class Order extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    
-    
 }

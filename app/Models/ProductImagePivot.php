@@ -30,6 +30,7 @@ class ProductImagePivot extends Model
      */
     protected $guarded = ['created_at','updated_at'];
 
+    // Product's related Images
     public function products() {
         return $this->belongsToMany(Product::class);
     }

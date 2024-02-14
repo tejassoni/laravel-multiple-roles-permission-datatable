@@ -2,7 +2,7 @@
     <!-- Header Section Starts -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Sub Category
+            Sub Categories
         </h2>
     </x-slot>
     <!-- Header Section Ends -->
