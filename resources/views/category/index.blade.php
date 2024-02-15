@@ -1,9 +1,12 @@
 <x-app-layout>
+    <!-- Header Section Starts -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Parent Categories
         </h2>
     </x-slot>
+    <!-- Header Section Ends -->
+    
     <!-- KEY : DATATABLE Starts Styles -->
     @push('header-styles')
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">

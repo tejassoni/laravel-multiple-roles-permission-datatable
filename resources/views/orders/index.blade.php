@@ -1,9 +1,11 @@
 <x-app-layout>
+    <!-- Header Section Starts -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Orders') }}
         </h2>
     </x-slot>
+    <!-- Header Section Ends -->
     <!-- KEY : DATATABLE Starts Styles -->
     @push('header-styles')
         <link href="{{ asset('css/datatables.min.css') }}" rel="stylesheet">
@@ -114,7 +116,7 @@
             </div>
         </div>
     </div>
-    {{-- KEY : DATATABLE Starts --}}
+    {{-- KEY : DATATABLE Script Starts --}}
     @push('footer-scripts')
         <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
         <script type='text/javascript' src="{{ asset('js/datatables.min.js') }}"></script>
@@ -124,5 +126,5 @@
             });
         </script>
     @endpush
-    {{-- KEY : DATATABLE Ends --}}
+    {{-- KEY : DATATABLE Script Ends --}}
 </x-app-layout>
