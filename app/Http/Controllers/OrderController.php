@@ -81,15 +81,8 @@ class OrderController extends Controller
      * Display the specified resource.
      */
     public function show(Order $order)
-    {
-        $selectedProducts = [];
-        $orderId = $order->id;
-        $order->with(['products','products.category.subcategories','user'])->where('user_id', auth()->user()->id);
-        if ($order->has('products')) {
-            $order->products->each(function ($prod, $key) use (&$selectedProducts) {
-                $selectedProducts[] = $prod->id;
-            });
-        }      
+    {     
+        $order->with(['products','products.category.subcategories','user'])->where('user_id', auth()->user()->id);     
         return view('orders.show', compact('order'));
     }
 

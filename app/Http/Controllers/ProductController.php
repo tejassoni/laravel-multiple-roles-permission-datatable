@@ -62,7 +62,7 @@ class ProductController extends Controller
                 $filehandle = $this->_multipleFileUploads($request, 'images', 'public/products');
                 if ($filehandle['status']) { // files are uploaded successfully
                     $productImgsDetailsArr = [];
-                    foreach ($filehandle['data'] as $keyFile => $valFile) {
+                    foreach ($filehandle['data'] as $valFile) {
                         $productImgsDetailsArr[] = ['filename' => $valFile['name'], 'filemeta' => json_encode($valFile), 'product_id' => $created->id, 'created_at' => now(), 'updated_at' => now()];
                     }
                     // Insert Bulk Product Images data
