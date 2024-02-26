@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+// CHANGESTATUS Validation Request
 class SubCategoryStatusUpdateRequest extends FormRequest
 {
     /**

@@ -12,7 +12,7 @@
     @endpush
     <!-- KEY : DATATABLE Ends Styles -->
 
-    <!-- Filter Search Starts -->
+    <!-- FILTERSEARCH Div Starts -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -26,6 +26,7 @@
                                         placeholder="Enter Product name" maxlength="100" value="{{ request()->name }}">
                                 </div>
                             </div>
+                            <!-- CHANGESTATUS Select Option Starts --> 
                             <div class="flex-initial w-64 pl-3">
                                 <div class="mb-4">
                                     <label for="status"
@@ -37,6 +38,7 @@
                                     </select>
                                 </div>
                             </div>
+                            <!-- CHANGESTATUS Select Option Starts --> 
 
                             <div class="flex-initial w-64 pl-3">
                                 <div class="mb-4">
@@ -69,7 +71,7 @@
             </div>
         </div>
     </div>
-    <!-- Filter Search Ends -->
+    <!-- FILTERSEARCH Div Ends -->
 
     <!-- Tables Lists Starts -->
     <div class="py-12">
@@ -175,6 +177,7 @@
                                 </td>
                                 <td class="px-4 py-2 border">{{ $product->price }}</td>
                                 <td class="px-4 py-2 border">{{ $product->qty }}</td>
+                                <!-- CHANGESTATUS RadioButton Starts --> 
                                 <td class="px-4 py-2 border">
                                     <input type="radio" name="status_{{ $product->id }}"
                                         data-id="{{ $product->id }}"
@@ -186,6 +189,7 @@
                                         value="{{ App\Models\Product::STATUS_INACTIVE }}"
                                         @if (!$product->status) checked @endif /> In-Active
                                 </td>
+                                <!-- CHANGESTATUS RadioButton Ends -->
                                 <td class="px-4 py-2 border">
                                     <form action="{{ route('products.destroy', $product->id) }}" method="POST">
                                         <!-- KEY : MULTIPERMISSION starts -->
@@ -231,7 +235,7 @@
                 // datatable initilization
                 $('#tbl').DataTable();
 
-                // change status from list with ajax
+                // CHANGESTATUS Select JS Starts change status from list with ajax
                 $(document).on('change', '.status', function() {
                     $.ajax({
                         type: 'POST', // Default GET
@@ -274,6 +278,7 @@
                         }
                     });
                 });
+                // CHANGESTATUS Select JS Ends
 
                 // from date 
                 $(document).on('change', '.from_date', function() {

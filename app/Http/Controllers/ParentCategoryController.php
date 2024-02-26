@@ -141,7 +141,7 @@ class ParentCategoryController extends Controller
     }
 
     /**
-     * Update the status.
+     * Update the status. CHANGESTATUS
      */
     public function changeStatus(CategoryStatusUpdateRequest $request)
     {
@@ -173,7 +173,7 @@ class ParentCategoryController extends Controller
     }
 
     /**
-     * Search filter records on basis of inputs.
+     * Search filter records on basis of inputs. FILTERSEARCH
      */
     public function filterCategory(Request $request)
     {        

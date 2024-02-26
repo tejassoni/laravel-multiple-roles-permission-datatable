@@ -13,7 +13,7 @@
     @endpush
     <!-- KEY : DATATABLE Styles Ends -->
 
-    <!-- Filter Search Starts -->
+    <!-- FILTERSEARCH Div Starts -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -39,6 +39,7 @@
                                         placeholder="Enter Created By" maxlength="100" value="{{ request()->createdby }}">
                                 </div>
                             </div>
+                            <!-- CHANGESTATUS Select Option Starts --> 
                             <div class="flex-initial w-64 pl-3">
                                 <div class="mb-4">
                                     <label for="status"
@@ -50,6 +51,7 @@
                                     </select>
                                 </div>
                             </div>
+                            <!-- CHANGESTATUS Select Option Ends --> 
                             <div class="flex-initial w-64 pl-3">
                                 <button title="search" type="submit"
                                     class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">
@@ -67,7 +69,7 @@
             </div>
         </div>
     </div>
-    <!-- Filter Search Ends -->
+    <!-- FILTERSEARCH Div Ends -->
 
     <!-- Tables Lists Starts -->
     <div class="py-12">
@@ -146,6 +148,7 @@
                                     @endphp
                                     </td>
                                     <td class="px-4 py-2 border">{{ $subCat->getCatUserHasOne->name ?? 'None' }}</td>
+                                    <!-- CHANGESTATUS RadioButton Starts --> 
                                     <td class="px-4 py-2 border">
                                         <input type="radio" name="status_{{ $subCat->id }}"
                                             data-id="{{ $subCat->id }}"
@@ -157,6 +160,7 @@
                                             value="{{ App\Models\SubCategory::STATUS_INACTIVE }}"
                                             @if (!$subCat->status) checked @endif /> In-Active
                                     </td>
+                                    <!-- CHANGESTATUS RadioButton Ends -->
                                     <td class="px-4 py-2 border">
                                         <form action="{{ route('subcategory.destroy', $subCat->id) }}" method="POST">
                                              <!-- KEY : MULTIPERMISSION starts -->
@@ -197,7 +201,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $('#tbl').DataTable();
-
+                // CHANGESTATUS Select JS Starts change status from list with ajax
                 $(document).on('change', '.status', function() {
                     $.ajax({
                         type: 'POST', // Default GET
@@ -240,6 +244,7 @@
                         }
                     });
                 });
+                // CHANGESTATUS Select JS Ends
             });
         </script>
     @endpush

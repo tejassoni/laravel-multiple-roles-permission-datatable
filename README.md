@@ -61,4 +61,6 @@ Server Requirements
   <li>KEY : MULTIPERMISSION</li>
   <li>KEY : DATATABLE</li>
   <li>KEY : DYNAMICMULTIROW</li>
+  <li>KEY : CHANGESTATUS</li>
+  <li>KEY : FILTERSEARCH</li>
 </ol>

@@ -305,7 +305,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Update the status.
+     * Update the status. CHANGESTATUS
      */
     public function changeStatus(ProductStatusUpdateRequest $request)
     {
@@ -337,9 +337,9 @@ class ProductController extends Controller
     }
 
     /**
-     * Search filter records on basis of inputs.
+     * Search filter records on basis of inputs. FILTERSEARCH
      */
-    public function filterCategory(Request $request)
+    public function filterProduct(Request $request)
     {        
         try {
             $query = Product::query(); // using relationships 

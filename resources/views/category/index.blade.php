@@ -13,7 +13,7 @@
     @endpush
     <!-- KEY : DATATABLE Ends Styles -->
 
-    <!-- Filter Search Starts -->
+    <!-- FILTERSEARCH Div Starts -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -27,6 +27,7 @@
                                         placeholder="Enter Category name" maxlength="100" value="{{ request()->name }}">
                                 </div>
                             </div>
+                            <!-- CHANGESTATUS RadioButton Starts --> 
                             <div class="flex-initial w-64 pl-3">
                                 <div class="mb-4">
                                     <label for="status"
@@ -39,6 +40,8 @@
                                         @if (request()->has('status') && request()->status == App\Models\Category::STATUS_INACTIVE) checked @endif /> In-Active
                                 </div>
                             </div>
+                            <!-- CHANGESTATUS RadioButton Ends -->
+
                             <div class="flex-initial w-64 pl-3">
                                 <button title="search" type="submit"
                                     class="inline-flex items-center px-4 py-2 my-3 text-xs font-semibold tracking-widest text-white uppercase transition duration-150 ease-in-out bg-gray-800 border border-transparent rounded-md hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray disabled:opacity-25">
@@ -56,7 +59,7 @@
             </div>
         </div>
     </div>
-    <!-- Filter Search Ends -->
+    <!-- FILTERSEARCH Div Ends -->
 
     <!-- Tables Lists Starts -->
     <div class="py-12">
@@ -106,9 +109,9 @@
                     @endif
                     <!-- Calls when session error triggers ends -->
 
-                    <!-- Dynamic Notification Alert Ajax Starts -->
+                    <!-- Dynamic Notification Alert Ajax CHANGESTATUS Starts -->
                     <div id="notification-alert"></div>
-                    <!-- Dynamic Notification Alert Ajax Ends -->
+                    <!-- Dynamic Notification Alert Ajax CHANGESTATUS Ends -->
 
 
                     <!-- KEY : DATATABLE Table ID and Class -->
@@ -177,6 +180,8 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $('#tbl').DataTable();
+
+                // KEY :: CHANGESTATUS Radio JS Starts 
                 $(document).on('change', '.status', function() {
                     $.ajax({
                         type: 'POST', // Default GET
@@ -219,6 +224,7 @@
                         }
                     });
                 });
+                // KEY :: CHANGESTATUS Radio JS Ends
             });
         </script>
     @endpush

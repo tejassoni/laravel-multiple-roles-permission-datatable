@@ -154,7 +154,7 @@ class SubCategoryController extends Controller
     }
 
     /**
-     * Update the status.
+     * Update the status. CHANGESTATUS
      */
     public function changeStatus(SubCategoryStatusUpdateRequest $request)
     {
@@ -186,9 +186,9 @@ class SubCategoryController extends Controller
     }
 
     /**
-     * Search filter records on basis of inputs.
+     * Search filter records on basis of inputs. FILTERSEARCH
      */
-    public function filterCategory(Request $request)
+    public function filterSubCategory(Request $request)
     {        
         try {
             $query = SubCategory::query()->with(['getCatUserHasOne', 'parentcategories:name']); // using relationships 

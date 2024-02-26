@@ -187,13 +187,13 @@
         <script type='text/javascript' src="{{ asset('js/jquery-3.6.4.min.js') }}"></script>
         <script type="text/javascript">
             $(document).ready(function() {
-                // Add Row Btn 
+                // Add DYNAMICMULTIROW Row Btn 
                 $(document).on('click', '#add-row', function() {
                     var row = $('#row-template').clone();
                     row.removeAttr('id').show();
                     $('#dynamicAddRemoveTbl tbody').append(row);
                 });
-                // Remove Row Btn 
+                // Remove DYNAMICMULTIROW Row Btn 
                 $(document).on('click', '.remove-row', function() {
                     if ($('#dynamicAddRemoveTbl tbody tr').length > 2) { // Check if more than one row exists
                         $(this).closest('tr').remove(); // Remove only if multiple rows are present
