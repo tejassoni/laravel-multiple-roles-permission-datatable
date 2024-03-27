@@ -349,8 +349,8 @@ class ProductController extends Controller
             })->when($request->filled('status'), function ($query) use ($request) {
                 return $query->where('status', $request->status);
             })->when($request->filled('from_date') && $request->filled('to_date'), function ($query) use ($request) {                        
-                return $query->whereDate("created_at", '>=', $request->from_date)
-                ->whereDate("created_at", '<=', $request->to_date);
+                return $query->whereDate("created_at", '>=', date('Y-m-d', strtotime($request->from_date)))
+                ->whereDate("created_at", '<=', date('Y-m-d', strtotime($request->to_date)));
             });           
             $products = $query->get();
             return view('products.index', compact('products'));
